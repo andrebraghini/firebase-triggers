@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "lib": ["es2018"],
+    "module": "commonjs",
+    "outDir": "./lib",
+    "strict": true,
+    "target": "es2018"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "**/__tests__/*"]
+}
