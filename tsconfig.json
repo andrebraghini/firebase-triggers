@@ -1,11 +1,14 @@
 {
   "compilerOptions": {
     "declaration": true,
+    "experimentalDecorators": true,
     "lib": ["es2018"],
     "module": "commonjs",
     "outDir": "./lib",
     "strict": true,
-    "target": "es2018"
+    "target": "es2018",
+    "noImplicitThis": false,
+    "noImplicitAny": false
   },
   "include": ["src"],
   "exclude": ["node_modules", "**/__tests__/*"]
