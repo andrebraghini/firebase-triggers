@@ -14,18 +14,18 @@ describe('@onPubSubPublish', () => {
   it('should have pubsubSubscribe() method on the Firebase Function List on memory', () => {
     // Setup
     const func = getFirebaseFunctionList().find((item) => item.methodName === 'pubsubSubscribe');
-    if (!func) {
+    if (func) {
+      // Execute
+      const result = func.method();
+  
+      // Validate
+      expect(result).toBe('pubsubSubscribe');
+      expect(func.className).toBe('DemoCtrl');
+      expect(func.methodName).toBe('pubsubSubscribe');
+      expect(func.trigger).toBe(FirebaseTriggerType.PUBSUB_PUBLISH);
+      expect(func.key).toBe('the-topic');
+    } else {
       fail('Method pubsubSubscribe() not found');
     }
-
-    // Execute
-    const result = func.method();
-
-    // Validate
-    expect(result).toBe('pubsubSubscribe');
-    expect(func.className).toBe('DemoCtrl');
-    expect(func.methodName).toBe('pubsubSubscribe');
-    expect(func.trigger).toBe(FirebaseTriggerType.PUBSUB_PUBLISH);
-    expect(func.key).toBe('the-topic');
   });
 });

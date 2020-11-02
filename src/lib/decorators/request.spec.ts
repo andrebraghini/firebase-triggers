@@ -24,54 +24,54 @@ describe('@onRequest', () => {
   it('should have httpRequest() method on the Firebase Function List on memory', () => {
     // Setup
     const func = getFirebaseFunctionList().find((item) => item.methodName === 'httpRequest');
-    if (!func) {
+    if (func) {
+      // Execute
+      const result = func.method();
+
+      // Validate
+      expect(result).toBe('httpRequest');
+      expect(func.className).toBe('DemoCtrl');
+      expect(func.methodName).toBe('httpRequest');
+      expect(func.trigger).toBe(FirebaseTriggerType.HTTP_REQUEST);
+    } else {
       fail('Method httpRequest() not found');
     }
-
-    // Execute
-    const result = func.method();
-
-    // Validate
-    expect(result).toBe('httpRequest');
-    expect(func.className).toBe('DemoCtrl');
-    expect(func.methodName).toBe('httpRequest');
-    expect(func.trigger).toBe(FirebaseTriggerType.HTTP_REQUEST);
   });
 
   it('should have httpRequestDiffName() method on the Firebase Function List on memory within a different key', () => {
     // Setup
     const func = getFirebaseFunctionList().find((item) => item.methodName === 'httpRequestDiffName');
-    if (!func) {
+    if (func) {
+      // Execute
+      const result = func.method();
+  
+      // Validate
+      expect(result).toBe('httpRequestDiffName');
+      expect(func.className).toBe('DemoCtrl');
+      expect(func.methodName).toBe('httpRequestDiffName');
+      expect(func.trigger).toBe(FirebaseTriggerType.HTTP_REQUEST);
+      expect(func.key).toBe('newNamePath');
+    } else {
       fail('method httpRequestDiffName() not found');
     }
-
-    // Execute
-    const result = func.method();
-
-    // Validate
-    expect(result).toBe('httpRequestDiffName');
-    expect(func.className).toBe('DemoCtrl');
-    expect(func.methodName).toBe('httpRequestDiffName');
-    expect(func.trigger).toBe(FirebaseTriggerType.HTTP_REQUEST);
-    expect(func.key).toBe('newNamePath');
   });
 
   it('should have httpRequestWithOpt() method on the Firebase Function List on memory within a different key', () => {
     // Setup
     const func = getFirebaseFunctionList().find((item) => item.methodName === 'httpRequestWithOpt');
-    if (!func) {
+    if (func) {
+      // Execute
+      const result = func.method();
+  
+      // Validate
+      expect(result).toBe('httpRequestWithOpt');
+      expect(func.className).toBe('DemoCtrl');
+      expect(func.methodName).toBe('httpRequestWithOpt');
+      expect(func.trigger).toBe(FirebaseTriggerType.HTTP_REQUEST);
+      expect(func.key.path).toBe('pathWithOpt');
+      expect(func.key.methods).toMatchObject(['GET', 'POST']);
+    } else {
       fail('Method httpRequestWithOpt() not found');
     }
-
-    // Execute
-    const result = func.method();
-
-    // Validate
-    expect(result).toBe('httpRequestWithOpt');
-    expect(func.className).toBe('DemoCtrl');
-    expect(func.methodName).toBe('httpRequestWithOpt');
-    expect(func.trigger).toBe(FirebaseTriggerType.HTTP_REQUEST);
-    expect(func.key.path).toBe('pathWithOpt');
-    expect(func.key.methods).toMatchObject(['GET', 'POST']);
   });
 });
