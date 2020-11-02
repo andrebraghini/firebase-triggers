@@ -14,6 +14,7 @@
   <a href="https://github.com/andrebraghini/firebase-triggers/blob/main/LICENSE">
     <img alt="License" src="https://img.shields.io/badge/license-MIT-FFCA28">
   </a>
+  <img alt="Test result" src="https://github.com/andrebraghini/firebase-triggers/workflows/Tests/badge.svg">
 
   <br>
 
