@@ -2,8 +2,8 @@ import { getClassMethod, getClassName, addFirebaseFunction } from '../internal-m
 import { FirebaseFunction, FirebaseTriggerType } from '../types';
 
 /**
- * Decorator que adiciona o método da classe à lista de Cloud Functions
- * acionada ao criar um usuário novo no FirebaseAuth
+ * Decorator that adds the class method to the Cloud Functions list triggered
+ * when creating a new user in Firebase Authentication.
  */
 export function onFirebaseUserCreate() {
   return (target: any, key: string) => {

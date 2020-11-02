@@ -2,9 +2,8 @@ import { getClassMethod, getClassName, addFirebaseFunction } from '../internal-m
 import { FirebaseFunction, FirebaseTriggerType } from '../types';
 
 /**
- * Decorator que adiciona o método da classe à lista de Cloud Functions
- * acionada quando for feita uma publicação via PubSub no tópico especificado
- * @param topic Tópico do PubSub para se inscrever
+ * Decorator that adds the method to the list of Cloud Functions triggered when a publication is made via PubSub on the specified topic
+ * @param topic PubSub topic to subscribe
  */
 export function onPubSubPublish(topic: string) {
   return (target: any, key: string) => {

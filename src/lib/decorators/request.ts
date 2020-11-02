@@ -2,12 +2,11 @@ import { getClassMethod, getClassName, addFirebaseFunction } from '../internal-m
 import { FirebaseFunction, FirebaseTriggerType } from '../types';
 
 /**
- * Decorator que adiciona o método da classe à lista de Cloud Functions
- * acionada ao receber uma requisição HTTP
- * @param opt Configurações opcionais da função. Se passar uma string ela é usada como path
- * @param opt.methods Métodos HTTP aceitos na requisição
- * @param opt.path Sufixo da URL também utilizada como nome do método no GCP
- *                 Se não informar o path, será utilizado o próprio nome do método (Recomendado).
+ * Decorator that adds the method to the Cloud Functions list triggered when receiving an HTTP request
+ * @param opt Optional function settings. If you enter a string it is used as a path.
+ * @param opt.methods HTTP methods accepted in the request
+ * @param opt.path URL suffix also used as method name in GCP.
+ *                 If you do not enter the path, the method name will be used. (Recommended)
  */
 export function onRequest(opt?: string | { path?: string, methods?: string|string[] }) {
   return (target: any, key: string) => {

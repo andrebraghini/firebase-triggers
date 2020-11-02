@@ -39,10 +39,10 @@ const triggerMethods = {
 }
 
 /**
- * Retorna nome da função para o Cloud Functions baseado no nome do método.
- * Se o gatilho da função for de requisições HTTP e for passado o parâmetro com o nome do método,
- * então essa regra de nomenclatura será ignorada e o nome do método informado será utilizado.
- * @param func Dados da função
+ * Returns function name for Cloud Functions based on the method name.
+ * If the function's trigger is for HTTP requests and the parameter with the method name is passed,
+ * then this nomenclature rule will be ignored and the name of the method entered will be used.
+ * @param func Function data
  */
 function getCloudFunctionName(func: FirebaseFunction): string {
   if (func.trigger === FirebaseTriggerType.HTTP_REQUEST && func.key) {
@@ -56,11 +56,11 @@ function getCloudFunctionName(func: FirebaseFunction): string {
 }
 
 /**
- * Retorna método que será executado com manipulação de validação do schema se existir
- * um esquema na pasta de esquemas da aplicação com o mesmo nome do método e também um
- * tratamento genérico para erros de requisições HTTP não tratados.
- * @param fullMethodName Nome completo do método gerado no Cloud Functions
- * @param func Dados do método
+ * Returns method that will be executed with schema validation handling if there is a schema
+ * in the application's schema folder with the same name as the method and also a generic
+ * treatment for untreated HTTP request errors.
+ * @param fullMethodName Full method name generated in Cloud Functions
+ * @param func Function data
  */
 function getMethodHandler(fullMethodName: string, func: FirebaseFunction): Function {
   let method = func.method;
@@ -85,7 +85,7 @@ function getMethodHandler(fullMethodName: string, func: FirebaseFunction): Funct
 }
 
 /**
- * Retorna lista de métodos vinculados à gatilhos para exportar na inicialização da aplicação
+ * Returns list of methods linked to triggers to export at application startup
  */
 export function getFirebaseFunctionListToExport(): FirebaseFunctionList {
   const result: FirebaseFunctionList = {};

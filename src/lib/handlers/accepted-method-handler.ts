@@ -25,8 +25,8 @@ function validateRequest(req: functions.Request, res: functions.Response, method
 }
 
 /**
- * Retorna método que verifica se o método HTTP é aceito
- * @param requestHandler Método de requisição HTTP que será executado
+ * Returns method that checks whether the HTTP method is accepted
+ * @param requestHandler HTTP request method that will be executed
  */
 export function acceptedMethodsHandler(requestHandler: Function, methods: string[] = []): Function {
   return async function(...args: any[]) {

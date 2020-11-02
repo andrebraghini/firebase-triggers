@@ -2,10 +2,9 @@ import { getClassMethod, getClassName, addFirebaseFunction } from '../internal-m
 import { FirebaseFunction, FirebaseTriggerType } from '../types';
 
 /**
- * Decorator que adiciona o método da classe à lista de Cloud Functions
- * acionada ao editar documento existente no Firestore
- * @param documentOrCollection Caminho do documento ou coleção do Firestore.
- * Para utilizar chaves coringa, informe os parâmetros entre chaves. Ex: 'user/{uid}/account/{accountId}'
+ * Decorator that adds the method to the Cloud Functions list triggered when editing an existing document in Firestore
+ * @param documentOrCollection Firestore document or collection path
+ * To use wildcard keys, enter the parameters between keys. e.g. 'user/{uid}/account/{accountId}'
  */
 export function onFirestoreUpdate(documentOrCollection: string) {
   return (target: any, key: string) => {

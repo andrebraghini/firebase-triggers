@@ -40,6 +40,7 @@
 
 4. [Schema validation](#schema-validation)
 
+
 ## Installation
 
 `npm install --save firebase-triggers`
@@ -47,70 +48,210 @@
 
 ## Usage
 
-Antes de usar em uma aplicação, deve utilizar o método `getFirebaseFunctionListToExport()` que retorna um objeto com a lista de métodos a serem exportados no arquivo principal da aplicação.
-Sugerimos varrer o objeto exportando cada método individualmente com o nome da propriedade como no exemplo abaixo:
+Before deploying to Firebase Functions you need to export the methods at the entry point of your application.
+
+The `getFirebaseFunctionListToExport()` method returns an object with the list of methods found in the application.
+
+Iterate the object by exporting each method individually with the property name as in the example below:
 
 ```ts
 import { getFirebaseFunctionListToExport } from 'firebase-triggers';
 
+// Obtain the "Cloud Functions" found in the code and export each one
 const list = getFirebaseFunctionListToExport();
 for (const key in list) {
     exports[key] = list[key];
 }
 ```
 
-As _Cloud Functions_ serão exportadas de forma agrupada por classe.
-Supondo que temos uma classe `UsuarioCtrl` com os métodos `atualizar` e `listar`, esses métodos serão exportados com os nomes **usuario-atualizar** e **usuario-listar** respectivamente no _Cloud Functions_.
+Cloud Functions will be exported grouped by class.
+Assuming you have an `UserCtrl` class with `update()` and `list()` methods, these methods will be exported with the names **user-update** and **user-list** respectively in Cloud Functions.
+
+
+### Simple usage
+
+```ts
+import { getFirebaseFunctionListToExport } from 'firebase-triggers';
+import { onFirestoreCreate, onRequest } from './decorators';
+
+class MyCtrl {
+
+  @onFirestoreCreate('todo/{id}')
+  docWrite(snapshot, context) {
+    const data = snapshot.data();
+    console.log(`New task added: ${data.title} at ${data.time}`);
+  }
+
+  @onRequest('hello-world')
+  httpRequest(request, response) {
+    response.send('Hello World!');
+  }
+
+}
+
+// Obtain the "Cloud Functions" found in the code and export each one
+const list = getFirebaseFunctionListToExport();
+for (const key in list) {
+    exports[key] = list[key];
+}
+```
+
+
+### Complete usage
+
+```ts
+import { getFirebaseFunctionListToExport } from 'firebase-triggers';
+import { onFirebaseUserCreate, onFirebaseUserDelete, onFirestoreCreate, onFirestoreUpdate, onFirestoreDelete, onFirestoreWrite, onPubSubPublish, onRequest, onPubSubSchedule } from './decorators';
+
+class MyCtrl {
+
+  @onFirebaseUserCreate()
+  userCreate(user, context) {
+    console.log(`${user.displayName} joined us`);
+  }
+
+  @onFirebaseUserDelete()
+  userDelete(user, context) {
+    console.log(`${user.displayName} left us`);
+  }
+
+  @onFirestoreCreate('todo/{id}')
+  docCreate(snapshot, context) {
+    // Get an object representing the document. e.g. { title: 'Wash the dishes', time: '12:00' }
+    const newValue = snapshot.data();
+    // access a particular field as you would any JS property
+    const title = newValue.title;
+    const time = newValue.time;
+
+    console.log(`New task added: ${title} at ${time}`);
+  }
+
+  @onFirestoreUpdate('todo/{id}')
+  docUpdate(change, context) {
+    // Get an object representing the document. e.g. { title: 'Wash the dishes', time: '12:00' }
+    const newValue = change.after.data();
+    // ...or the previous value before this update
+    const previousValue = change.before.data();
+    // access a particular field as you would any JS property
+    const newTitle = newValue.title;
+    const oldTitle = previousValue.title;
+
+    console.log(`Changed the title from "${oldTitle}" to "${newTitle}"`);
+  }
+
+  @onFirestoreDelete('todo/{id}')
+  docDelete(snapshot, context) {
+    // Get an object representing the document. e.g. { title: 'Wash the dishes', time: '12:00' }
+    const oldValue = snapshot.data();
+    // access a particular field as you would any JS property
+    const title = oldValue.title;
+
+    console.log(`Task "${title}" removed`);
+  }
+
+  @onFirestoreWrite('todo/{id}')
+  docWrite(snapshot, context) {
+    // Get an object with the current document value. If the document does not exist, it has been deleted.
+    const newDocument = change.after.exists ? change.after.data() : null;
+    // Get an object with the previous document value (for update or delete)
+    const oldDocument = change.before.exists ? change.before.data() : null;
+
+    if (!newDocument) {
+      const title = oldDocument.title;
+      console.log(`Task "${title}" removed`);
+      return;
+    }
+
+    if (!oldDocument) {
+      const title = newDocument.title;
+      const time = newDocument.time;
+      console.log(`New task added: ${title} at ${time}`);
+      return;
+    }
+
+    const newTitle = newDocument.title;
+    const oldTitle = oldDocument.title;
+
+    console.log(`Changed the title from "${oldTitle}" to "${newTitle}"`);
+  }
+
+  @onPubSubPublish('my-topic')
+  pubsubSubscribe(message, context) {
+    const publishedData = message.json;
+    console.log('Data published via PubSub on my-topic:', publishedData);
+  }
+
+  @onPubSubSchedule('0 5 * * *')
+  everyDayAtFiveAM(context) {
+    console.log('Method executed every day at 5 AM');
+  }
+
+  @onRequest('myCustomPath')
+  httpRequest(request, response) {
+    const requestBody = request.body;
+    console.log({ requestBody });
+
+    response.send('Hello World!');
+  }
+
+}
+
+// Obtain the "Cloud Functions" found in the code and export each one
+const list = getFirebaseFunctionListToExport();
+for (const key in list) {
+    exports[key] = list[key];
+}
+```
 
 
 ## Decorators
 
-Para definir gatilhos do Firebase Functions nos métodos, basta adicionar o decorator desejado sobre o método em questão e importar o mesmo deste pacote.
+To define Firebase Functions triggers, just add the desired decorator on the method, not forgetting to import the decorator:
 
-Ex: `import { onRequest } from 'firebase-triggers';`
+e.g. `import { onRequest } from 'firebase-triggers';`
 
 ### @onFirebaseUserCreate()
 
-Adicione o decorator `@onFirebaseUserCreate()` sobre um método de uma classe de controle para que este método seja executado sempre que um novo usuário for criado no FirebaseAuth.
+Add the `@onFirebaseUserCreate()` decorator to a method to be executed whenever a new user is created in Firebase Authentication.
 
 ### @onFirebaseUserDelete()
 
-Adicione o *decorator* `@onFirebaseUserDelete()` sobre um método de uma classe de controle para que este método seja executado sempre que um usuário for removido do FirebaseAuth.
+Add the `@onFirebaseUserDelete()` decorator to a method to be executed whenever a user is removed from Firebase Authentication.
 
 ### @onFirestoreCreate()
 
-Adicione o *decorator* `@onFirestoreCreate('demo_collection/{id}')` sobre um método de uma classe de controle para que este método seja executado sempre que um novo documento for **criado** no banco de dados do Firestore na *collection* definida parâmetro no *decorator*.
+Add the `@onFirestoreCreate()` decorator to a method to be executed whenever a new document is **created** in Firestore, in the collection defined as a decorator parameter.
 
 ### @onFirestoreUpdate()
 
-Adicione o *decorator* `@onFirestoreUpdate('demo_collection/{id}')` sobre um método de uma classe de controle para que este método seja executado sempre que um documento existente for **alterado** no banco de dados do Firestore na *collection* definida parâmetro no *decorator*.
+Add the `@onFirestoreUpdate()` decorator to a method to be executed whenever an existing document is **changed** in Firestore, in the collection defined as a decorator parameter.
 
 ### @onFirestoreDelete()
 
-Adicione o *decorator* `@onFirestoreDelete('demo_collection/{id}')` sobre um método de uma classe de controle para que este método seja executado sempre que um documento for **removido** no banco de dados do Firestore na *collection* definida parâmetro no *decorator*.
+Add the `@onFirestoreDelete()` decorator to a method to be executed whenever a document is **removed** from the Firestore, in the collection defined as a decorator parameter.
 
 ### @onFirestoreWrite()
 
-Adicione o *decorator* `onFirestoreWrite('demo_collection/{id}')` sobre um método de uma classe de controle para que este método seja executado sempre que um documento for **criado, alterado ou removido** do banco de dados do Firestore na *collection* definida como parâmetro do *decorator*.
+Add the `onFirestoreWrite()`decorator to a method to be executed whenever a document is **created, changed or removed** from the Firestore, in the collection defined as a decorator parameter.
 
 ### @onPubSubPublish()
 
-Adicione o *decorator* `@onPubSubPublish('the-topic')` sobre um método de uma classe de controle para que este método seja executado sempre que for feita uma publicação via PubSub no tópico definido como parâmetro no *decorator*.
+Add the `@onPubSubPublish()` decorator to a method to be executed whenever a publication is made via PubSub, on the topic defined as a parameter in the decorator.
 
 ### @onPubSubSchedule()
 
-Adicione o *decorator* `@onPubSubSchedule('* * * * *')` sobre um método de uma classe de controle para que este método seja executado de forma temporizada de acordo com o intervalo definido no parâmetro no *decorator* seguindo os padrões do cron.
+Add the `@onPubSubSchedule()` decorator in a method to be executed according to the interval defined as a parameter in the decorator, following the cron patterns.
 
-Os horários são baseados no fuso horário **America/Los_Angeles**.
-Como alternativa pode informar um fuso horário diferente da seguinte forma: `@onPubSubSchedule({ interval: '* * * * *', timezone: 'America/Araguaina' })`.
+The default time zone is **America/Los_Angeles**.
+Alternatively, you can enter a different time zone as follows: `@onPubSubSchedule({ interval: '* * * * *', timezone: 'America/Araguaina' })`.
 
-Para entender melhor como definir o horário usando o padrão do cron veja um exemplo no site [https://crontab.guru](https://crontab.guru).
+To better understand how to set the time using the cron pattern see an example on the website [https://crontab.guru](https://crontab.guru).
 
 ### @onRequest()
 
-Adicione o decorator `@onRequest()` sobre um método de uma classe de controle para que este método seja executado sempre que uma requisição HTTP for feita para o endereço do projeto no Cloud Functions seguido do nome de classe e do método, usando *camelCase* ignorando o sufixo `Ctrl` da nomenclatura das classes de controle.
+Add the `@onRequest()` decorator to a method to be executed whenever an HTTP request is made to the project address in Cloud Functions followed by the class and method name, using camelCase and ignoring the `Ctrl` suffix control class nomenclature.
 
-Ex: Levando em consideração o código abaixo, onde o nome da classe é `UserCtrl` e o método é nomeado como `getProfile()`, logo a URL externa para a requisição HTTP seria `https://us-central1-brnet-web-dev.cloudfunctions.net/user-getProfile`.
+e.g. Considering the code below, where the class name is `UserCtrl` and the method is named `getProfile()`, then the external URL for the HTTP request would be `https://us-central1-brnet-web-dev.cloudfunctions.net/user-getProfile`.
 
 ```ts
 class UserCtrl {
@@ -122,13 +263,13 @@ class UserCtrl {
 }
 ```
 
-Este método também aceita um parâmetro, que quando informado passa a ser o nome da função no _Cloud Functions_ e também o sufixo da URL para requisição.
+This method also accepts a parameter, which when informed, becomes the name of the function in Cloud Functions and also the URL suffix for the request.
 
-Levando em consideração o exemplo acima, se o _decorator_ fosse declarado com parâmetro 'api' (ex: `@onRequest('api')`), neste caso a URL externa para a requisição HTTP seria `https://us-central1-brnet-web-dev.cloudfunctions.net/api`, ignorando a regra de nomenclatura das classes de controle.
+Considering the example above, if the decorator was declared with parameter 'api' (e.g. `@onRequest('api')`), in this case the external URL for the HTTP request would be `https://us-central1-brnet-web-dev.cloudfunctions.net/api`, ignoring the control class naming rule.
 
 #### Schema validation
 
-As requisições que usam o _decorator_ `@onRequest()` podem ser validadas através de arquivos de schema que devem estar na pasta `schema` de cada aplicação com o nome exato da função que será exportada para o _Cloud Functions_.
-Se o arquivo existir a validação será feita.
+Requests using the `@onRequest()` decorator can be validated through schema files that must be in the `schema` folder with the exact name of the function that will be exported to Cloud Functions.
+If the file exists, validation will be performed.
 
-Também é possível no lado do cliente visualizar os arquivos de schema adicionando o sufixo `/schema.json` na URL do método exportado.
+It is also possible on the client side to view the schema files by adding the suffix `/schema.json` to the URL of the exported method.

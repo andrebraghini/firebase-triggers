@@ -2,9 +2,8 @@ import { getClassMethod, getClassName, addFirebaseFunction } from '../internal-m
 import { FirebaseFunction, FirebaseTriggerType } from '../types';
 
 /**
- * Decorator que adiciona o método da classe à lista de Cloud Functions
- * acionada quando for feita uma publicação via PubSub acionado via Cron
- * @param schedule Intervalo de tempo do cron (ex: '5 11 * * *' ou 'every 5 minutes')
+ * Decorator that adds the method to the list of Cloud Functions triggered when a publication is made via PubSub triggered via Cron
+ * @param schedule Cron time interval (ex: '5 11 * * *' ou 'every 5 minutes')
  */
 export function onPubSubSchedule(schedule: string | { interval: string, timezone?: string }) {
   return (target: any, key: string) => {

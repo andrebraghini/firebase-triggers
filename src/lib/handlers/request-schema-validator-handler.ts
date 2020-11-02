@@ -34,9 +34,9 @@ function validateRequest(req: functions.Request, res: functions.Response, schema
 }
 
 /**
- * Retorna método que valida o schema da requisição e responde com erro se não estiver de acordo.
- * @param requestHandler Método de requisição HTTP que será executado caso o schema seja válido
- * @param schemaFile Arquivo do schema
+ * Returns method that validates the request schema and responds with an error if it is not correct.
+ * @param requestHandler HTTP request method that will be executed if the schema is valid
+ * @param schemaFile Schema file
  */
 export function requestSchemaValidatorHandler(requestHandler: Function, schemaFile: string): Function {
   return async function(...args: any[]) {

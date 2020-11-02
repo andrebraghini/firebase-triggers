@@ -2,8 +2,8 @@ import { getClassMethod, getClassName, addFirebaseFunction } from '../internal-m
 import { FirebaseFunction, FirebaseTriggerType } from '../types';
 
 /**
- * Decorator que adiciona o método da classe à lista de Cloud Functions
- * acionada ao remover um usuário do FirebaseAuth
+ * Decorator that adds the method to the Cloud Functions list that is
+ * triggered when removing a user from Firebase Authentication
  */
 export function onFirebaseUserDelete() {
   return (target: any, key: string) => {
