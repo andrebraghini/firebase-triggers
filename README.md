@@ -55,6 +55,7 @@ The `getFirebaseFunctionListToExport()` method returns an object with the list o
 Iterate the object by exporting each method individually with the property name as in the example below:
 
 ```ts
+import 'reflect-metadata';
 import { getFirebaseFunctionListToExport } from 'firebase-triggers';
 
 // Obtain the "Cloud Functions" found in the code and export each one
@@ -71,6 +72,7 @@ Assuming you have an `UserCtrl` class with `update()` and `list()` methods, thes
 ### Simple example
 
 ```ts
+import 'reflect-metadata';
 import { getFirebaseFunctionListToExport, onFirestoreCreate, onRequest } from 'firebase-triggers';
 
 class MyCtrl {
@@ -97,6 +99,7 @@ for (const key in list) {
 ### Complete example
 
 ```ts
+import 'reflect-metadata';
 import {
   getFirebaseFunctionListToExport,
   onFirebaseUserCreate,
