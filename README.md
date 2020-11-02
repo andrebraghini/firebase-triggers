@@ -7,10 +7,10 @@
     <img alt="André Braghini" src="https://img.shields.io/badge/-AndreBraghiniS-FFCA28?style=flat&logo=Linkedin&logoColor=white" />
   </a>
   <img alt="Repository size" src="https://img.shields.io/github/repo-size/andrebraghini/firebase-triggers?color=FFCA28">
-
   <a href="https://github.com/andrebraghini/firebase-triggers/commits/main">
     <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/andrebraghini/firebase-triggers?color=FFCA28">
   </a>
+  <img alt="npm version" src="https://img.shields.io/npm/v/firebase-triggers?color=FFCA28">
   <a href="https://github.com/andrebraghini/firebase-triggers/blob/main/LICENSE">
     <img alt="License" src="https://img.shields.io/badge/license-MIT-FFCA28">
   </a>

@@ -7,6 +7,9 @@
   "files": [
     "lib/**/*"
   ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
   "scripts": {
     "test": "jest --config jest.config.json",
     "build": "tsc",
