@@ -69,8 +69,7 @@ Supondo que você tenha uma classe `UserCtrl` com os métodos `update()` e `list
 ### Exemplo simples
 
 ```ts
-import { getFirebaseFunctionListToExport } from 'firebase-triggers';
-import { onFirestoreCreate, onRequest } from './decorators';
+import { getFirebaseFunctionListToExport, onFirestoreCreate, onRequest } from 'firebase-triggers';
 
 class MyCtrl {
   @onFirestoreCreate('todo/{id}')
@@ -96,8 +95,8 @@ for (const key in list) {
 ### Exemplo completo
 
 ```ts
-import { getFirebaseFunctionListToExport } from 'firebase-triggers';
 import {
+  getFirebaseFunctionListToExport,
   onFirebaseUserCreate,
   onFirebaseUserDelete,
   onFirestoreCreate,
@@ -107,7 +106,7 @@ import {
   onPubSubPublish,
   onRequest,
   onPubSubSchedule,
-} from './decorators';
+} from 'firebase-triggers';
 
 class MyCtrl {
   @onFirebaseUserCreate()
@@ -255,7 +254,7 @@ Para entender melhor como definir o horário usando o padrão do cron veja um ex
 
 Adicione o decorator `@onRequest()` em um método para ser executado sempre que uma requisição HTTP for feita para o endereço do projeto no Cloud Functions seguido do nome de classe e do método, usando *camelCase* e ignorando o sufixo `Ctrl` da nomenclatura das classes de controle.
 
-Ex: Considerando o código abaixo, onde o nome da classe é `UserCtrl` e o método é nomeado como `getProfile()`, logo a URL externa para a requisição HTTP seria `https://us-central1-brnet-web-dev.cloudfunctions.net/user-getProfile`.
+Ex: Considerando o código abaixo, onde o nome da classe é `UserCtrl` e o método é nomeado como `getProfile()`, logo a URL externa para a requisição HTTP seria `https://us-central1-project-name.cloudfunctions.net/user-getProfile`.
 
 ```ts
 class UserCtrl {
@@ -269,7 +268,7 @@ class UserCtrl {
 
 Este método também aceita um parâmetro, que quando informado, passa a ser o nome da função no _Cloud Functions_ e também o sufixo da URL para requisição.
 
-Considerando o exemplo acima, se o _decorator_ fosse declarado com parâmetro 'api' (ex: `@onRequest('api')`), neste caso a URL externa para a requisição HTTP seria `https://us-central1-brnet-web-dev.cloudfunctions.net/api`, ignorando a regra de nomenclatura das classes de controle.
+Considerando o exemplo acima, se o _decorator_ fosse declarado com parâmetro 'api' (ex: `@onRequest('api')`), neste caso a URL externa para a requisição HTTP seria `https://us-central1-project-name.cloudfunctions.net/api`, ignorando a regra de nomenclatura das classes de controle.
 
 #### Validação de esquema
 

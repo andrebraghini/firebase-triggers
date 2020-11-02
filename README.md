@@ -71,8 +71,7 @@ Assuming you have an `UserCtrl` class with `update()` and `list()` methods, thes
 ### Simple example
 
 ```ts
-import { getFirebaseFunctionListToExport } from 'firebase-triggers';
-import { onFirestoreCreate, onRequest } from './decorators';
+import { getFirebaseFunctionListToExport, onFirestoreCreate, onRequest } from 'firebase-triggers';
 
 class MyCtrl {
   @onFirestoreCreate('todo/{id}')
@@ -98,8 +97,8 @@ for (const key in list) {
 ### Complete example
 
 ```ts
-import { getFirebaseFunctionListToExport } from 'firebase-triggers';
 import {
+  getFirebaseFunctionListToExport,
   onFirebaseUserCreate,
   onFirebaseUserDelete,
   onFirestoreCreate,
@@ -109,7 +108,7 @@ import {
   onPubSubPublish,
   onRequest,
   onPubSubSchedule,
-} from './decorators';
+} from 'firebase-triggers';
 
 class MyCtrl {
   @onFirebaseUserCreate()
@@ -257,7 +256,7 @@ To better understand how to set the time using the cron pattern see an example o
 
 Add the `@onRequest()` decorator to a method to be executed whenever an HTTP request is made to the project address in Cloud Functions followed by the class and method name, using camelCase and ignoring the `Ctrl` suffix control class nomenclature.
 
-e.g. Considering the code below, where the class name is `UserCtrl` and the method is named `getProfile()`, then the external URL for the HTTP request would be `https://us-central1-brnet-web-dev.cloudfunctions.net/user-getProfile`.
+e.g. Considering the code below, where the class name is `UserCtrl` and the method is named `getProfile()`, then the external URL for the HTTP request would be `https://us-central1-project-name.cloudfunctions.net/user-getProfile`.
 
 ```ts
 class UserCtrl {
@@ -271,7 +270,7 @@ class UserCtrl {
 
 This method also accepts a parameter, which when informed, becomes the name of the function in Cloud Functions and also the URL suffix for the request.
 
-Considering the example above, if the decorator was declared with parameter 'api' (e.g. `@onRequest('api')`), in this case the external URL for the HTTP request would be `https://us-central1-brnet-web-dev.cloudfunctions.net/api`, ignoring the control class naming rule.
+Considering the example above, if the decorator was declared with parameter 'api' (e.g. `@onRequest('api')`), in this case the external URL for the HTTP request would be `https://us-central1-project-name.cloudfunctions.net/api`, ignoring the control class naming rule.
 
 #### Schema validation
 
