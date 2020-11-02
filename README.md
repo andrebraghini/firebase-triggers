@@ -68,7 +68,7 @@ Cloud Functions will be exported grouped by class.
 Assuming you have an `UserCtrl` class with `update()` and `list()` methods, these methods will be exported with the names **user-update** and **user-list** respectively in Cloud Functions.
 
 
-### Simple usage
+### Simple example
 
 ```ts
 import { getFirebaseFunctionListToExport } from 'firebase-triggers';
@@ -97,7 +97,7 @@ for (const key in list) {
 ```
 
 
-### Complete usage
+### Complete example
 
 ```ts
 import { getFirebaseFunctionListToExport } from 'firebase-triggers';
