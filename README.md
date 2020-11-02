@@ -25,7 +25,7 @@
 <p align="center">
   <a href="README.md">English</a>
   ·
-  <a href="README.pt.md">Portuguese</a>
+  <a href="https://github.com/andrebraghini/firebase-triggers/blob/main/README.pt.md">Portuguese</a>
 </p>
 
 
