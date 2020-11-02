@@ -8,7 +8,8 @@
     "strict": true,
     "target": "es2018",
     "noImplicitThis": false,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "sourceMap": true,
   },
   "include": ["src"],
   "exclude": ["node_modules", "**/*.spec.ts"]

@@ -15,7 +15,7 @@ describe('requestErrorHandler()', () => {
     const handledMethod = requestErrorHandler(originalMethod);
     return handledMethod(req, res).then(() => {
       expect(res.status).toBeCalledWith(500);
-      expect(res.json).toBeCalledTimes(1);
+      expect(res.json.mock.calls.length).toBe(1);
       expect(res.json.mock.calls[0][0]).toMatchObject({
         success: false,
         error: {
@@ -40,7 +40,7 @@ describe('requestErrorHandler()', () => {
     const handledMethod = requestErrorHandler(originalMethod);
     return handledMethod(req, res).then(() => {
       expect(res.status).toBeCalledWith(400);
-      expect(res.json).toBeCalledTimes(1);
+      expect(res.json.mock.calls.length).toBe(1);
       expect(res.json.mock.calls[0][0]).toMatchObject({
         success: false,
         error: {

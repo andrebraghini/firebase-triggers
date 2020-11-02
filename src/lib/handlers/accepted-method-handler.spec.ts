@@ -14,7 +14,7 @@ describe('acceptedMethodsHandler()', () => {
     return handledMethod(req, res).then(() => {
       expect(originalMethod).not.toBeCalled();
       expect(res.status).toBeCalledWith(400);
-      expect(res.json).toBeCalledTimes(1);
+      expect(res.json.mock.calls.length).toBe(1);
       expect(res.json.mock.calls[0][0]).toMatchObject({
         success: false,
         error: {
@@ -39,7 +39,7 @@ describe('acceptedMethodsHandler()', () => {
     const handledMethod = acceptedMethodsHandler(originalMethod, ['GET']);
     return handledMethod(req, res).then(() => {
       expect(originalMethod).toBeCalledWith(req, res);
-      expect(res.json).toBeCalledTimes(1);
+      expect(res.json.mock.calls.length).toBe(1);
       expect(res.json.mock.calls[0][0]).toMatchObject({ success: true });
     });
   });
