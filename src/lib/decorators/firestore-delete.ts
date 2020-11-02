@@ -13,8 +13,8 @@ export function onFirestoreDelete(documentOrCollection: string) {
       methodName: key,
       method: getClassMethod(target, key),
       trigger: FirebaseTriggerType.FIRESTORE_DELETE,
-      key: documentOrCollection
+      key: documentOrCollection,
     };
     addFirebaseFunction(firebaseFunction);
-  }
+  };
 }

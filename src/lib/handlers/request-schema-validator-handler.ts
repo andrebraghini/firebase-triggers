@@ -12,21 +12,21 @@ function validateRequest(req: functions.Request, res: functions.Response, schema
     res.sendFile(schemaFile);
     return false;
   }
-  
+
   const schemaString: string = readFileSync(schemaFile).toString('utf8');
   const schema: any = JSON.parse(schemaString);
-  
+
   const ajv = new Ajv({ allErrors: true });
   const validate = ajv.compile(schema);
   const valid = validate(req.body);
-  
+
   if (!valid) {
     const responseData = {
       success: false,
       error: SCHEMA_INVALID,
-      validations: validate.errors
+      validations: validate.errors,
     };
-    
+
     res.status(400).json(responseData);
   }
 
@@ -39,9 +39,9 @@ function validateRequest(req: functions.Request, res: functions.Response, schema
  * @param schemaFile Schema file
  */
 export function requestSchemaValidatorHandler(requestHandler: Function, schemaFile: string): Function {
-  return async function(...args: any[]) {
+  return async function (...args: any[]) {
     if (validateRequest(args[0], args[1], schemaFile)) {
       return requestHandler.apply(this, args);
     }
-  }
+  };
 }

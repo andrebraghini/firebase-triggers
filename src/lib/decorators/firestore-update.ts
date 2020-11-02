@@ -13,8 +13,8 @@ export function onFirestoreUpdate(documentOrCollection: string) {
       methodName: key,
       method: getClassMethod(target, key),
       trigger: FirebaseTriggerType.FIRESTORE_UPDATE,
-      key: documentOrCollection
+      key: documentOrCollection,
     };
     addFirebaseFunction(firebaseFunction);
-  }
+  };
 }

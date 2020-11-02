@@ -58,7 +58,7 @@ import { getFirebaseFunctionListToExport } from 'firebase-triggers';
 // Obtém as "Cloud Functions" encontradas no código de exporta cada uma
 const list = getFirebaseFunctionListToExport();
 for (const key in list) {
-    exports[key] = list[key];
+  exports[key] = list[key];
 }
 ```
 
@@ -73,7 +73,6 @@ import { getFirebaseFunctionListToExport } from 'firebase-triggers';
 import { onFirestoreCreate, onRequest } from './decorators';
 
 class MyCtrl {
-
   @onFirestoreCreate('todo/{id}')
   docWrite(snapshot, context) {
     const data = snapshot.data();
@@ -84,13 +83,12 @@ class MyCtrl {
   httpRequest(request, response) {
     response.send('Hello World!');
   }
-
 }
 
 // Obtém as "Cloud Functions" encontradas no código de exporta cada uma
 const list = getFirebaseFunctionListToExport();
 for (const key in list) {
-    exports[key] = list[key];
+  exports[key] = list[key];
 }
 ```
 
@@ -99,10 +97,19 @@ for (const key in list) {
 
 ```ts
 import { getFirebaseFunctionListToExport } from 'firebase-triggers';
-import { onFirebaseUserCreate, onFirebaseUserDelete, onFirestoreCreate, onFirestoreUpdate, onFirestoreDelete, onFirestoreWrite, onPubSubPublish, onRequest, onPubSubSchedule } from './decorators';
+import {
+  onFirebaseUserCreate,
+  onFirebaseUserDelete,
+  onFirestoreCreate,
+  onFirestoreUpdate,
+  onFirestoreDelete,
+  onFirestoreWrite,
+  onPubSubPublish,
+  onRequest,
+  onPubSubSchedule,
+} from './decorators';
 
 class MyCtrl {
-
   @onFirebaseUserCreate()
   userCreate(user, context) {
     console.log(`${user.displayName} se juntou a nós`);
@@ -191,13 +198,12 @@ class MyCtrl {
 
     response.send('Hello World!');
   }
-
 }
 
 // Obtém as "Cloud Functions" encontradas no código de exporta cada uma
 const list = getFirebaseFunctionListToExport();
 for (const key in list) {
-    exports[key] = list[key];
+  exports[key] = list[key];
 }
 ```
 
@@ -253,11 +259,11 @@ Ex: Considerando o código abaixo, onde o nome da classe é `UserCtrl` e o méto
 
 ```ts
 class UserCtrl {
-    @onRequest()
-    static async getProfile(req, res) {
-        const profile = await loadProfile(req.body.id);
-        res.json(profile);
-    }
+  @onRequest()
+  static async getProfile(req, res) {
+    const profile = await loadProfile(req.body.id);
+    res.json(profile);
+  }
 }
 ```
 

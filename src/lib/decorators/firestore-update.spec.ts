@@ -4,20 +4,19 @@ import { getFirebaseFunctionList } from '../internal-methods';
 import { onFirestoreUpdate } from './firestore-update';
 
 class DemoCtrl {
-
   @onFirestoreUpdate('demo_collection/{id}')
   docUpdate() {
     return 'docUpdate';
   }
-
 }
 
 describe('@onFirestoreUpdate', () => {
-
   it('should have docUpdate() method on the Firebase Function List on memory', () => {
     // Setup
-    const func = getFirebaseFunctionList().find(item => item.methodName === 'docUpdate');
-    if (!func) { fail('Method docUpdate() not found'); }
+    const func = getFirebaseFunctionList().find((item) => item.methodName === 'docUpdate');
+    if (!func) {
+      fail('Method docUpdate() not found');
+    }
 
     // Execute
     const result = func.method();
@@ -29,5 +28,4 @@ describe('@onFirestoreUpdate', () => {
     expect(func.trigger).toBe(FirebaseTriggerType.FIRESTORE_UPDATE);
     expect(func.key).toBe('demo_collection/{id}');
   });
-
 });

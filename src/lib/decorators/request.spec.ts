@@ -4,7 +4,6 @@ import { getFirebaseFunctionList } from '../internal-methods';
 import { onRequest } from './request';
 
 class DemoCtrl {
-
   @onRequest()
   httpRequest() {
     return 'httpRequest';
@@ -19,15 +18,15 @@ class DemoCtrl {
   httpRequestWithOpt() {
     return 'httpRequestWithOpt';
   }
-
 }
 
 describe('@onRequest', () => {
-
   it('should have httpRequest() method on the Firebase Function List on memory', () => {
     // Setup
-    const func = getFirebaseFunctionList().find(item => item.methodName === 'httpRequest');
-    if (!func) { fail('Method httpRequest() not found'); }
+    const func = getFirebaseFunctionList().find((item) => item.methodName === 'httpRequest');
+    if (!func) {
+      fail('Method httpRequest() not found');
+    }
 
     // Execute
     const result = func.method();
@@ -41,8 +40,10 @@ describe('@onRequest', () => {
 
   it('should have httpRequestDiffName() method on the Firebase Function List on memory within a different key', () => {
     // Setup
-    const func = getFirebaseFunctionList().find(item => item.methodName === 'httpRequestDiffName');
-    if (!func) { fail('method httpRequestDiffName() not found'); }
+    const func = getFirebaseFunctionList().find((item) => item.methodName === 'httpRequestDiffName');
+    if (!func) {
+      fail('method httpRequestDiffName() not found');
+    }
 
     // Execute
     const result = func.method();
@@ -57,8 +58,10 @@ describe('@onRequest', () => {
 
   it('should have httpRequestWithOpt() method on the Firebase Function List on memory within a different key', () => {
     // Setup
-    const func = getFirebaseFunctionList().find(item => item.methodName === 'httpRequestWithOpt');
-    if (!func) { fail('Method httpRequestWithOpt() not found'); }
+    const func = getFirebaseFunctionList().find((item) => item.methodName === 'httpRequestWithOpt');
+    if (!func) {
+      fail('Method httpRequestWithOpt() not found');
+    }
 
     // Execute
     const result = func.method();
@@ -71,5 +74,4 @@ describe('@onRequest', () => {
     expect(func.key.path).toBe('pathWithOpt');
     expect(func.key.methods).toMatchObject(['GET', 'POST']);
   });
-
 });

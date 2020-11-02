@@ -7,19 +7,17 @@ import { INTERNAL_ERROR, mergeError } from '../errors';
  * @param requestHandler HTTP request method that will be executed
  */
 export function requestErrorHandler(requestHandler: Function): Function {
-  return async function(...args: any[]) {
+  return async function (...args: any[]) {
     const res: functions.Response = args[1];
     try {
       requestHandler.apply(this, args);
     } catch (error) {
-      res
-        .status(error.responseCode || 500)
-        .json({
-          success: false,
-          error: mergeError(INTERNAL_ERROR, { error })
-        });
+      res.status(error.responseCode || 500).json({
+        success: false,
+        error: mergeError(INTERNAL_ERROR, { error }),
+      });
 
       console.error(error);
     }
-  }
+  };
 }

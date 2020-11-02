@@ -2,7 +2,6 @@
  * Action to trigger a Cloud Function
  */
 export enum FirebaseTriggerType {
-
   /** Triggered when a new user is created on Firebase Authentication */
   USER_CREATE = 'USER_CREATE',
 
@@ -28,6 +27,5 @@ export enum FirebaseTriggerType {
   PUBSUB_SCHEDULE = 'PUBSUB_SCHEDULE',
 
   /** Triggered by HTTP requests */
-  HTTP_REQUEST = 'HTTP_REQUEST'
-
+  HTTP_REQUEST = 'HTTP_REQUEST',
 }

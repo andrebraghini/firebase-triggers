@@ -1,10 +1,9 @@
-import { FirebaseTriggerType } from "./firebase-trigger-type";
+import { FirebaseTriggerType } from './firebase-trigger-type';
 
 /**
  * Firebase function data
  */
 export interface FirebaseFunction {
-
   /** Class name */
   className: string;
 

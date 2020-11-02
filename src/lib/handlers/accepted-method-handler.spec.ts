@@ -1,4 +1,4 @@
-import { acceptedMethodsHandler } from "./accepted-method-handler";
+import { acceptedMethodsHandler } from './accepted-method-handler';
 
 describe('acceptedMethodsHandler()', () => {
   it('should send response code 400 if using an not allowed method', () => {
@@ -19,8 +19,8 @@ describe('acceptedMethodsHandler()', () => {
         success: false,
         error: {
           code: 'http/method-not-found',
-          error: 'The HTTP method used in this operation is not allowed'
-        }
+          error: 'The HTTP method used in this operation is not allowed',
+        },
       });
     });
   });

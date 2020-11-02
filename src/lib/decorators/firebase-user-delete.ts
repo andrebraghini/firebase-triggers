@@ -11,8 +11,8 @@ export function onFirebaseUserDelete() {
       className: getClassName(target),
       methodName: key,
       method: getClassMethod(target, key),
-      trigger: FirebaseTriggerType.USER_DELETE
+      trigger: FirebaseTriggerType.USER_DELETE,
     };
     addFirebaseFunction(firebaseFunction);
-  }
+  };
 }

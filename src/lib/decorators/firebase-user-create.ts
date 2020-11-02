@@ -11,8 +11,8 @@ export function onFirebaseUserCreate() {
       className: getClassName(target),
       methodName: key,
       method: getClassMethod(target, key),
-      trigger: FirebaseTriggerType.USER_CREATE
+      trigger: FirebaseTriggerType.USER_CREATE,
     };
     addFirebaseFunction(firebaseFunction);
-  }
+  };
 }

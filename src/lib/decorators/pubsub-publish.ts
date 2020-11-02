@@ -12,8 +12,8 @@ export function onPubSubPublish(topic: string) {
       methodName: key,
       method: getClassMethod(target, key),
       trigger: FirebaseTriggerType.PUBSUB_PUBLISH,
-      key: topic
+      key: topic,
     };
     addFirebaseFunction(firebaseFunction);
-  }
+  };
 }

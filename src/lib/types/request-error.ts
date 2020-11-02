@@ -2,7 +2,6 @@
  * HTTP request error
  */
 export interface RequestError {
-
   /** Internal error code */
   code: string;
 
@@ -14,5 +13,4 @@ export interface RequestError {
 
   /** Response HTTP error code */
   responseCode?: number;
-
 }

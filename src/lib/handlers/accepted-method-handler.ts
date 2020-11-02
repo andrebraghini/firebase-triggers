@@ -6,20 +6,16 @@ function validateRequest(req: functions.Request, res: functions.Response, method
     return true;
   }
 
-  const index = methods
-    .map(method => method.toUpperCase())
-    .indexOf(req.method.toUpperCase());
-  
+  const index = methods.map((method) => method.toUpperCase()).indexOf(req.method.toUpperCase());
+
   if (index >= 0) {
     return true;
   }
 
-  res
-    .status(400)
-    .json({
-      success: false,
-      error: HTTP_METHOD_NOT_FOUND
-    });
+  res.status(400).json({
+    success: false,
+    error: HTTP_METHOD_NOT_FOUND,
+  });
 
   return false;
 }
@@ -29,9 +25,9 @@ function validateRequest(req: functions.Request, res: functions.Response, method
  * @param requestHandler HTTP request method that will be executed
  */
 export function acceptedMethodsHandler(requestHandler: Function, methods: string[] = []): Function {
-  return async function(...args: any[]) {
+  return async function (...args: any[]) {
     if (validateRequest(args[0], args[1], methods)) {
       return requestHandler.apply(this, args);
     }
-  }
+  };
 }

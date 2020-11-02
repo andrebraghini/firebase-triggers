@@ -60,7 +60,7 @@ import { getFirebaseFunctionListToExport } from 'firebase-triggers';
 // Obtain the "Cloud Functions" found in the code and export each one
 const list = getFirebaseFunctionListToExport();
 for (const key in list) {
-    exports[key] = list[key];
+  exports[key] = list[key];
 }
 ```
 
@@ -75,7 +75,6 @@ import { getFirebaseFunctionListToExport } from 'firebase-triggers';
 import { onFirestoreCreate, onRequest } from './decorators';
 
 class MyCtrl {
-
   @onFirestoreCreate('todo/{id}')
   docWrite(snapshot, context) {
     const data = snapshot.data();
@@ -86,13 +85,12 @@ class MyCtrl {
   httpRequest(request, response) {
     response.send('Hello World!');
   }
-
 }
 
 // Obtain the "Cloud Functions" found in the code and export each one
 const list = getFirebaseFunctionListToExport();
 for (const key in list) {
-    exports[key] = list[key];
+  exports[key] = list[key];
 }
 ```
 
@@ -101,10 +99,19 @@ for (const key in list) {
 
 ```ts
 import { getFirebaseFunctionListToExport } from 'firebase-triggers';
-import { onFirebaseUserCreate, onFirebaseUserDelete, onFirestoreCreate, onFirestoreUpdate, onFirestoreDelete, onFirestoreWrite, onPubSubPublish, onRequest, onPubSubSchedule } from './decorators';
+import {
+  onFirebaseUserCreate,
+  onFirebaseUserDelete,
+  onFirestoreCreate,
+  onFirestoreUpdate,
+  onFirestoreDelete,
+  onFirestoreWrite,
+  onPubSubPublish,
+  onRequest,
+  onPubSubSchedule,
+} from './decorators';
 
 class MyCtrl {
-
   @onFirebaseUserCreate()
   userCreate(user, context) {
     console.log(`${user.displayName} joined us`);
@@ -193,13 +200,12 @@ class MyCtrl {
 
     response.send('Hello World!');
   }
-
 }
 
 // Obtain the "Cloud Functions" found in the code and export each one
 const list = getFirebaseFunctionListToExport();
 for (const key in list) {
-    exports[key] = list[key];
+  exports[key] = list[key];
 }
 ```
 
@@ -255,11 +261,11 @@ e.g. Considering the code below, where the class name is `UserCtrl` and the meth
 
 ```ts
 class UserCtrl {
-    @onRequest()
-    static async getProfile(req, res) {
-        const profile = await loadProfile(req.body.id);
-        res.json(profile);
-    }
+  @onRequest()
+  static async getProfile(req, res) {
+    const profile = await loadProfile(req.body.id);
+    res.json(profile);
+  }
 }
 ```
 

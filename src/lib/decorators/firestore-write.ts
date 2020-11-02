@@ -13,8 +13,8 @@ export function onFirestoreWrite(documentOrCollection: string) {
       methodName: key,
       method: getClassMethod(target, key),
       trigger: FirebaseTriggerType.FIRESTORE_WRITE,
-      key: documentOrCollection
+      key: documentOrCollection,
     };
     addFirebaseFunction(firebaseFunction);
-  }
+  };
 }

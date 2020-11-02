@@ -1,10 +1,19 @@
 import 'reflect-metadata';
-import { onFirebaseUserCreate, onFirebaseUserDelete, onFirestoreCreate, onFirestoreUpdate, onFirestoreDelete, onFirestoreWrite, onPubSubPublish, onRequest, onPubSubSchedule } from './decorators';
+import {
+  onFirebaseUserCreate,
+  onFirebaseUserDelete,
+  onFirestoreCreate,
+  onFirestoreUpdate,
+  onFirestoreDelete,
+  onFirestoreWrite,
+  onPubSubPublish,
+  onRequest,
+  onPubSubSchedule,
+} from './decorators';
 import { getFirebaseFunctionListToExport } from './functions';
 import { FirebaseFunctionList } from './types';
 
 class DemoCtrl {
-
   @onFirebaseUserCreate()
   userCreate() {
     return 'userCreate';
@@ -54,12 +63,10 @@ class DemoCtrl {
   httpRequestDiffName() {
     return 'httpRequestDiffName';
   }
-
 }
 
 // tslint:disable-next-line: max-classes-per-file
 class SecondClassCtrl {
-
   @onFirebaseUserCreate()
   userCreate() {
     return 'userCreate';
@@ -84,11 +91,9 @@ class SecondClassCtrl {
   httpRequestDiffName() {
     return 'httpRequestDiffName';
   }
-
 }
 
 describe('getFirebaseFunctionListToExport()', () => {
-
   it('should contain DemoCtrl class methods', () => {
     // Execute
     const result = getFirebaseFunctionListToExport();
@@ -121,5 +126,4 @@ describe('getFirebaseFunctionListToExport()', () => {
     expect((result.secondClass as FirebaseFunctionList)['unique-path-*']).toBeUndefined();
     expect(result['unique-path']).toBeDefined();
   });
-
 });

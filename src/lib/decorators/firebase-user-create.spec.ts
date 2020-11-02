@@ -4,20 +4,19 @@ import { FirebaseTriggerType } from '../types';
 import { getFirebaseFunctionList } from '../internal-methods';
 
 class DemoCtrl {
-
   @onFirebaseUserCreate()
   userCreate() {
     return 'userCreate';
   }
-
 }
 
 describe('@onFirebaseUserCreate()', () => {
-
   it('should have userCreate() method on the Firebase Function List on memory', () => {
     // Setup
-    const func = getFirebaseFunctionList().find(item => item.methodName === 'userCreate');
-    if (!func) { fail('Method userCreate() not found'); }
+    const func = getFirebaseFunctionList().find((item) => item.methodName === 'userCreate');
+    if (!func) {
+      fail('Method userCreate() not found');
+    }
 
     // Execute
     const result = func.method();
@@ -28,5 +27,4 @@ describe('@onFirebaseUserCreate()', () => {
     expect(func.methodName).toBe('userCreate');
     expect(func.trigger).toBe(FirebaseTriggerType.USER_CREATE);
   });
-
 });

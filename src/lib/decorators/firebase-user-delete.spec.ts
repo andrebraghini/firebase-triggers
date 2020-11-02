@@ -4,20 +4,19 @@ import { getFirebaseFunctionList } from '../internal-methods';
 import { onFirebaseUserDelete } from './firebase-user-delete';
 
 class DemoCtrl {
-
   @onFirebaseUserDelete()
   userDelete() {
     return 'userDelete';
   }
-
 }
 
 describe('@onFirebaseUserDelete', () => {
-
   it('should have userDelete() method on the Firebase Function List on memory', () => {
     // Setup
-    const func = getFirebaseFunctionList().find(item => item.methodName === 'userDelete');
-    if (!func) { fail('Method userDelete() not found'); }
+    const func = getFirebaseFunctionList().find((item) => item.methodName === 'userDelete');
+    if (!func) {
+      fail('Method userDelete() not found');
+    }
 
     // Execute
     const result = func.method();
@@ -28,5 +27,4 @@ describe('@onFirebaseUserDelete', () => {
     expect(func.methodName).toBe('userDelete');
     expect(func.trigger).toBe(FirebaseTriggerType.USER_DELETE);
   });
-
 });

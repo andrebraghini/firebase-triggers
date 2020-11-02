@@ -21,8 +21,8 @@ describe('requestErrorHandler()', () => {
         error: {
           code: 'internal/error',
           msg: 'An unexpected internal error has occurred',
-          error: 'Original method error'
-        }
+          error: 'Original method error',
+        },
       });
     });
   });
@@ -33,7 +33,7 @@ describe('requestErrorHandler()', () => {
     res.status.mockReturnThis();
     res.json.mockReturnThis();
     const originalMethod = () => {
-      throw { responseCode: 400, msg: 'Test message'};
+      throw { responseCode: 400, msg: 'Test message' };
     };
 
     // Execute
@@ -45,8 +45,8 @@ describe('requestErrorHandler()', () => {
         success: false,
         error: {
           code: 'internal/error',
-          msg: 'Test message'
-        }
+          msg: 'Test message',
+        },
       });
     });
   });
