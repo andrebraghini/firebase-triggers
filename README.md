@@ -6,17 +6,16 @@
   <a href="https://www.linkedin.com/in/andrebraghinis/">
     <img alt="André Braghini" src="https://img.shields.io/badge/-AndreBraghiniS-FFCA28?style=flat&logo=Linkedin&logoColor=white" />
   </a>
-  <img alt="Repository size" src="https://img.shields.io/github/repo-size/andrebraghini/firebase-triggers?color=FFCA28">
-  <a href="https://github.com/andrebraghini/firebase-triggers/commits/main">
-    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/andrebraghini/firebase-triggers?color=FFCA28">
-  </a>
   <a href="https://www.npmjs.com/package/firebase-triggers">
     <img alt="npm version" src="https://img.shields.io/npm/v/firebase-triggers?color=FFCA28">
   </a>
   <a href="https://github.com/andrebraghini/firebase-triggers/blob/main/LICENSE">
     <img alt="License" src="https://img.shields.io/badge/license-MIT-FFCA28">
   </a>
-  <img alt="Test result" src="https://github.com/andrebraghini/firebase-triggers/workflows/Tests/badge.svg">
+  <a href="https://codecov.io/gh/andrebraghini/firebase-triggers">
+    <img src="https://codecov.io/gh/andrebraghini/firebase-triggers/branch/main/graph/badge.svg?token=SF8KVUI3A8"/>
+  </a>
+  <img alt="Build result" src="https://travis-ci.org/andrebraghini/firebase-triggers.svg?branch=main">
 
   <br>
 
