@@ -17,7 +17,7 @@ describe('@onFirebaseUserCreate()', () => {
     if (func) {
       // Execute
       const result = func.method();
-  
+
       // Validate
       expect(result).toBe('userCreate');
       expect(func.className).toBe('DemoCtrl');

@@ -17,7 +17,7 @@ describe('@onPubSubPublish', () => {
     if (func) {
       // Execute
       const result = func.method();
-  
+
       // Validate
       expect(result).toBe('pubsubSubscribe');
       expect(func.className).toBe('DemoCtrl');

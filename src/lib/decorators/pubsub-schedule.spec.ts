@@ -17,7 +17,7 @@ describe('@onPubSubSchedule', () => {
     if (func) {
       // Execute
       const result = func.method();
-  
+
       // Validate
       expect(result).toBe('scheduleInterval');
       expect(func.className).toBe('DemoCtrl');

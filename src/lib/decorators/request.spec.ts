@@ -44,7 +44,7 @@ describe('@onRequest', () => {
     if (func) {
       // Execute
       const result = func.method();
-  
+
       // Validate
       expect(result).toBe('httpRequestDiffName');
       expect(func.className).toBe('DemoCtrl');
@@ -62,7 +62,7 @@ describe('@onRequest', () => {
     if (func) {
       // Execute
       const result = func.method();
-  
+
       // Validate
       expect(result).toBe('httpRequestWithOpt');
       expect(func.className).toBe('DemoCtrl');

@@ -17,7 +17,7 @@ describe('@onFirestoreUpdate', () => {
     if (func) {
       // Execute
       const result = func.method();
-  
+
       // Validate
       expect(result).toBe('docUpdate');
       expect(func.className).toBe('DemoCtrl');

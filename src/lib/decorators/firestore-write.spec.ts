@@ -17,7 +17,7 @@ describe('@onFirestoreWrite', () => {
     if (func) {
       // Execute
       const result = func.method();
-  
+
       // Validate
       expect(result).toBe('docWrite');
       expect(func.className).toBe('DemoCtrl');
