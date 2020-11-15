@@ -159,7 +159,7 @@ class MyCtrl {
   }
 
   @onFirestoreWrite('todo/{id}')
-  docWrite(snapshot, context) {
+  docWrite(change, context) {
     // Pega um objeto com o valor do documento atual. Se o documento não existir, ele foi removido.
     const newDocument = change.after.exists ? change.after.data() : null;
     // Pega um objeto com o valor do documento anterior (para uma atualização ou remoção (update ou delete)
@@ -264,7 +264,7 @@ Ex: Considerando o código abaixo, onde o nome da classe é `UserCtrl` e o méto
 ```ts
 class UserCtrl {
   @onRequest()
-  static async getProfile(req, res) {
+  async getProfile(req, res) {
     const profile = await loadProfile(req.body.id);
     res.json(profile);
   }

@@ -161,7 +161,7 @@ class MyCtrl {
   }
 
   @onFirestoreWrite('todo/{id}')
-  docWrite(snapshot, context) {
+  docWrite(change, context) {
     // Get an object with the current document value. If the document does not exist, it has been deleted.
     const newDocument = change.after.exists ? change.after.data() : null;
     // Get an object with the previous document value (for update or delete)
@@ -266,7 +266,7 @@ e.g. Considering the code below, where the class name is `UserCtrl` and the meth
 ```ts
 class UserCtrl {
   @onRequest()
-  static async getProfile(req, res) {
+  async getProfile(req, res) {
     const profile = await loadProfile(req.body.id);
     res.json(profile);
   }
