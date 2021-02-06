@@ -125,7 +125,6 @@ class SecondClassCtrl {
 
 // tslint:disable-next-line: max-classes-per-file
 class ThirdClassCtrl {
-
   @GET('rest')
   get() {
     return 'get';

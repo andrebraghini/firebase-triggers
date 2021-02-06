@@ -7,8 +7,8 @@ export type RequestOptions = string | { path?: string; methods?: HTTPMethod | HT
 /**
  * Returns a FirebaseFunction based on a specific method
  * @param method HTTP method
- * @param target 
- * @param key 
+ * @param target
+ * @param key
  * @param path URL suffix also used as method name in GCP. (optional)
  *             If you do not enter the path, the method name will be used. (Recommended)
  */
@@ -19,7 +19,7 @@ function getSpecificMethod(method: HTTPMethod, target: any, key: string, path?: 
     method: getClassMethod(target, key),
     trigger: FirebaseTriggerType.HTTP_REQUEST,
     key: { method, ...(!!path && { path }) },
-  }
+  };
 }
 
 /**

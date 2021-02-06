@@ -43,7 +43,7 @@ describe('multipleRequestHandler()', () => {
       expect(res.json.mock.calls[0][0]).toMatchObject({ success: true });
     });
   });
-  ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].forEach(method => {
+  ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].forEach((method) => {
     it(`should execute the ${method} method instead the DEFAULT method`, () => {
       // Setup
       const requestedMethod = jest.fn();
@@ -58,7 +58,7 @@ describe('multipleRequestHandler()', () => {
 
       const requestHandlerList: any = { DEFAULT: defaultMethod };
       requestHandlerList[method] = requestedMethod;
-  
+
       // Execute
       const handledMethod = multipleRequestHandler(requestHandlerList);
       return handledMethod(req, res).then(() => {
@@ -78,7 +78,7 @@ describe('multipleRequestHandler()', () => {
       const res = { status: jest.fn(), json: jest.fn() };
       res.status.mockReturnThis();
       res.json.mockReturnThis();
-  
+
       // Execute
       const handledMethod = multipleRequestHandler({ DEFAULT: defaultMethod });
       return handledMethod(req, res).then(() => {

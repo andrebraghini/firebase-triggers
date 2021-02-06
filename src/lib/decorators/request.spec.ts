@@ -118,10 +118,9 @@ describe(`@DELETE`, () => {
       fail(`Method del() not found`);
     }
   });
-
 });
 
-['GET', 'POST', 'PUT', 'PATCH'].forEach(method => {
+['GET', 'POST', 'PUT', 'PATCH'].forEach((method) => {
   describe(`@${method}`, () => {
     it(`should have ${method.toLowerCase()}() method on the Firebase Function List on memory`, () => {
       // Setup
@@ -129,7 +128,7 @@ describe(`@DELETE`, () => {
       if (func) {
         // Execute
         const result = func.method();
-  
+
         // Validate
         expect(result).toBe(method.toLowerCase());
         expect(func.className).toBe('DemoCtrl');
@@ -139,6 +138,5 @@ describe(`@DELETE`, () => {
         fail(`Method ${method.toLowerCase()}() not found`);
       }
     });
-  
   });
 });

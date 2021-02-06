@@ -50,22 +50,23 @@ function getCloudFunctionName(func: FirebaseFunction): string {
   return func.methodName;
 }
 
-function getHTTPMethodHandler(fullMethodName: string, httpRequestFunctions: {[httpMethod: string]: Function}): Function {
-  const requestHandlerList: {[key: string]: Function} = {};
+function getHTTPMethodHandler(
+  fullMethodName: string,
+  httpRequestFunctions: { [httpMethod: string]: Function },
+): Function {
+  const requestHandlerList: { [key: string]: Function } = {};
 
-  Object
-    .keys(httpRequestFunctions)
-    .forEach(httpMethod => {
-      let specificMethod = httpRequestFunctions[httpMethod];
+  Object.keys(httpRequestFunctions).forEach((httpMethod) => {
+    let specificMethod = httpRequestFunctions[httpMethod];
 
-      const schemaFileFileName = `${fullMethodName}${httpMethod === 'DEFAULT' ? '' : `_${httpMethod}`}.json`;
-      const schemaFile = resolve(`${__dirname}/schema/${schemaFileFileName}`);
-      if (existsSync(schemaFile)) {
-        specificMethod = requestSchemaValidatorHandler(specificMethod, schemaFile);
-      }
+    const schemaFileFileName = `${fullMethodName}${httpMethod === 'DEFAULT' ? '' : `_${httpMethod}`}.json`;
+    const schemaFile = resolve(`${__dirname}/schema/${schemaFileFileName}`);
+    if (existsSync(schemaFile)) {
+      specificMethod = requestSchemaValidatorHandler(specificMethod, schemaFile);
+    }
 
-      requestHandlerList[httpMethod] = specificMethod;
-    });
+    requestHandlerList[httpMethod] = specificMethod;
+  });
 
   let method = multipleRequestHandler(requestHandlerList);
   method = requestErrorHandler(method);
@@ -79,63 +80,64 @@ export function getFirebaseFunctionListToExport(): FirebaseFunctionList {
   const result: FirebaseFunctionList = {};
   const httpRequestFunctions: {
     [fullMethodName: string]: {
-      [httpMethod: string]: Function
-    }
+      [httpMethod: string]: Function;
+    };
   } = {};
 
   const functionList = getFirebaseFunctionList();
-  
+
   // Add methods to export, except HTTP methods
-  functionList
-    .forEach((func) => {
-      const triggerMethod = triggerMethods[func.trigger];
-      if (triggerMethod) {
-        const groupName = getGroupName(func);
-        const cloudFunctionName = getCloudFunctionName(func);
-        const fullMethodName = groupName ? `${groupName}-${cloudFunctionName}` : cloudFunctionName;
+  functionList.forEach((func) => {
+    const triggerMethod = triggerMethods[func.trigger];
+    if (triggerMethod) {
+      const groupName = getGroupName(func);
+      const cloudFunctionName = getCloudFunctionName(func);
+      const fullMethodName = groupName ? `${groupName}-${cloudFunctionName}` : cloudFunctionName;
 
-        if (func.trigger === FirebaseTriggerType.HTTP_REQUEST) {
-          const methods = !func.key ? ['DEFAULT'] : (Array.isArray(func.key.methods) ? func.key.methods : [func.key.methods || 'DEFAULT']);
-          if (!httpRequestFunctions[fullMethodName]) {
-            httpRequestFunctions[fullMethodName] = {};
-          }
-          
-          methods.forEach(httpMethod => {
-            httpRequestFunctions[fullMethodName][httpMethod] = func.method;
-          });
-
-          return;
+      if (func.trigger === FirebaseTriggerType.HTTP_REQUEST) {
+        const methods = !func.key
+          ? ['DEFAULT']
+          : Array.isArray(func.key.methods)
+          ? func.key.methods
+          : [func.key.methods || 'DEFAULT'];
+        if (!httpRequestFunctions[fullMethodName]) {
+          httpRequestFunctions[fullMethodName] = {};
         }
 
-        if (groupName) {
-          if (!result[groupName]) {
-            result[groupName] = {};
-          }
-          result[groupName][cloudFunctionName] = triggerMethod(func.method, func.key);
-        } else {
-          result[cloudFunctionName] = triggerMethod(func.method, func.key);
-        }
+        methods.forEach((httpMethod) => {
+          httpRequestFunctions[fullMethodName][httpMethod] = func.method;
+        });
+
+        return;
       }
-    });
-
-  // Add HTTP methods to export
-  Object
-    .keys(httpRequestFunctions)
-    .forEach(fullMethodName => {
-      const name = fullMethodName.split('-');
-      const groupName = name.length > 1 ? name[0] : undefined;
-      const cloudFunctionName = name.length > 1 ? name[1] : name[0];
-      const methodHandler = getHTTPMethodHandler(fullMethodName, httpRequestFunctions[fullMethodName])
 
       if (groupName) {
         if (!result[groupName]) {
           result[groupName] = {};
         }
-        result[groupName][cloudFunctionName] = functions.https.onRequest(methodHandler as any);
+        result[groupName][cloudFunctionName] = triggerMethod(func.method, func.key);
       } else {
-        result[cloudFunctionName] = functions.https.onRequest(methodHandler as any);
+        result[cloudFunctionName] = triggerMethod(func.method, func.key);
       }
-    });
+    }
+  });
+
+  // Add HTTP methods to export
+  Object.keys(httpRequestFunctions).forEach((fullMethodName) => {
+    const name = fullMethodName.split('-');
+    const groupName = name.length > 1 ? name[0] : undefined;
+    const cloudFunctionName = name.length > 1 ? name[1] : name[0];
+    const methodHandler = getHTTPMethodHandler(fullMethodName, httpRequestFunctions[fullMethodName]);
+
+    if (groupName) {
+      if (!result[groupName]) {
+        result[groupName] = {};
+      }
+      result[groupName][cloudFunctionName] = functions.https.onRequest(methodHandler as any);
+    } else {
+      result[cloudFunctionName] = functions.https.onRequest(methodHandler as any);
+    }
+  });
 
   return result;
 }
