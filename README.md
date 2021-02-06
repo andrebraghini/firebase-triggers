@@ -330,10 +330,27 @@ This method also accepts a parameter, which when informed, becomes the name of t
 
 Considering the example above, if the decorator was declared with parameter 'api' (e.g. `@onRequest('api')`), in this case the external URL for the HTTP request would be `https://us-central1-project-name.cloudfunctions.net/api`, ignoring the control class naming rule.
 
+
 #### Schema validation
 
 Requests using the `@onRequest()` decorator can be validated through schema files that must be in the `schema` folder with the exact name of the function that will be exported to Cloud Functions.
 If the file exists, validation will be performed.
+
+Using the decorators `@GET()`, `@POST()`, `@PUT()`, `@PATCH()` or `@DELETE()`, it is necessary to add a suffix separated by an underscore in the name of the schema file for every need.
+
+__Exemplos:__
+
+`user-update.json` (Applied when using @onRequest() without specifying the HTTP method)
+
+`user-update_GET.json` (Applied to HTTP GET requests)
+
+`user-update_POST.json` (Applied to HTTP POST requests)
+
+`user-update_PUT.json` (Applied to HTTP PUT requests)
+
+`user-update_PATCH.json` (Applied to HTTP PATCH requests)
+
+`user-update_DELETE.json` (Applied to HTTP DELETE requests)
 
 It is also possible on the client side to view the schema files by adding the suffix `/schema.json` to the URL of the exported method.
 

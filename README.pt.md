@@ -338,6 +338,22 @@ Considerando o exemplo acima, se o _decorator_ fosse declarado com parâmetro 'a
 As requisições que usam o _decorator_ `@onRequest()` podem ser validadas através de arquivos de schema que devem estar na pasta `schema` com o nome exato da função que será exportada para o _Cloud Functions_.
 Se o arquivo existir a validação será feita.
 
+Usando os decorators `@GET()`, `@POST()`, `@PUT()`, `@PATCH()` ou `@DELETE()`, é necessário acrescentar um sufixo separado por um _underline_ no nome do arquivo de schema para cada necessidade.
+
+__Exemplos:__
+
+`user-update.json` (Aplicado no uso do @onRequest() sem especificar o método HTTP)
+
+`user-update_GET.json` (Aplicado em requisições HTTP do tipo GET)
+
+`user-update_POST.json` (Aplicado em requisições HTTP do tipo POST)
+
+`user-update_PUT.json` (Aplicado em requisições HTTP do tipo PUT)
+
+`user-update_PATCH.json` (Aplicado em requisições HTTP do tipo PATCH)
+
+`user-update_DELETE.json` (Aplicado em requisições HTTP do tipo DELETE)
+
 Também é possível no lado do cliente visualizar os arquivos de schema adicionando o sufixo `/schema.json` na URL do método exportado.
 
 Você pode usar o site [jsonschema.net](https://jsonschema.net/) para gerar seus próprios schemas JSON.
