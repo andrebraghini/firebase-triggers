@@ -26,5 +26,5 @@ export interface FirebaseFunction {
 }
 
 export interface FirebaseFunctionList {
-  [key: string]: Function | FirebaseFunctionList;
+  [key: string]: Function | FirebaseFunction | FirebaseFunctionList;
 }

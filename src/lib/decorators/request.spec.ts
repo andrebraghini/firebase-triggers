@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { FirebaseTriggerType } from '../types';
 import { getFirebaseFunctionList } from '../internal-methods';
-import { onRequest } from './request';
+import { DELETE, GET, onRequest, PATCH, POST, PUT } from './request';
 
 class DemoCtrl {
   @onRequest()
@@ -17,6 +17,31 @@ class DemoCtrl {
   @onRequest({ path: 'pathWithOpt', methods: ['GET', 'POST'] })
   httpRequestWithOpt() {
     return 'httpRequestWithOpt';
+  }
+
+  @GET()
+  get() {
+    return 'get';
+  }
+
+  @POST()
+  post() {
+    return 'post';
+  }
+
+  @PUT()
+  put() {
+    return 'put';
+  }
+
+  @PATCH()
+  patch() {
+    return 'patch';
+  }
+
+  @DELETE()
+  del() {
+    return 'del';
   }
 }
 
@@ -73,5 +98,47 @@ describe('@onRequest', () => {
     } else {
       fail('Method httpRequestWithOpt() not found');
     }
+  });
+});
+
+describe(`@DELETE`, () => {
+  it(`should have del() method on the Firebase Function List on memory`, () => {
+    // Setup
+    const func = getFirebaseFunctionList().find((item) => item.methodName === 'del');
+    if (func) {
+      // Execute
+      const result = func.method();
+
+      // Validate
+      expect(result).toBe('del');
+      expect(func.className).toBe('DemoCtrl');
+      expect(func.methodName).toBe('del');
+      expect(func.trigger).toBe(FirebaseTriggerType.HTTP_REQUEST);
+    } else {
+      fail(`Method del() not found`);
+    }
+  });
+
+});
+
+['GET', 'POST', 'PUT', 'PATCH'].forEach(method => {
+  describe(`@${method}`, () => {
+    it(`should have ${method.toLowerCase()}() method on the Firebase Function List on memory`, () => {
+      // Setup
+      const func = getFirebaseFunctionList().find((item) => item.methodName === method.toLowerCase());
+      if (func) {
+        // Execute
+        const result = func.method();
+  
+        // Validate
+        expect(result).toBe(method.toLowerCase());
+        expect(func.className).toBe('DemoCtrl');
+        expect(func.methodName).toBe(method.toLowerCase());
+        expect(func.trigger).toBe(FirebaseTriggerType.HTTP_REQUEST);
+      } else {
+        fail(`Method ${method.toLowerCase()}() not found`);
+      }
+    });
+  
   });
 });
