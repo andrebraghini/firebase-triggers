@@ -53,17 +53,19 @@ function getCloudFunctionName(func: FirebaseFunction): string {
 function getHTTPMethodHandler(fullMethodName: string, httpRequestFunctions: {[httpMethod: string]: Function}): Function {
   const requestHandlerList: {[key: string]: Function} = {};
 
-  for (const httpMethod in httpRequestFunctions) {
-    let specificMethod = httpRequestFunctions[httpMethod];
+  Object
+    .keys(httpRequestFunctions)
+    .forEach(httpMethod => {
+      let specificMethod = httpRequestFunctions[httpMethod];
 
-    const schemaFileFileName = `${fullMethodName}${httpMethod === 'DEFAULT' ? '' : `_${httpMethod}`}.json`;
-    const schemaFile = resolve(`${__dirname}/schema/${schemaFileFileName}`);
-    if (existsSync(schemaFile)) {
-      specificMethod = requestSchemaValidatorHandler(specificMethod, schemaFile);
-    }
+      const schemaFileFileName = `${fullMethodName}${httpMethod === 'DEFAULT' ? '' : `_${httpMethod}`}.json`;
+      const schemaFile = resolve(`${__dirname}/schema/${schemaFileFileName}`);
+      if (existsSync(schemaFile)) {
+        specificMethod = requestSchemaValidatorHandler(specificMethod, schemaFile);
+      }
 
-    requestHandlerList[httpMethod] = specificMethod;
-  }
+      requestHandlerList[httpMethod] = specificMethod;
+    });
 
   let method = multipleRequestHandler(requestHandlerList);
   method = requestErrorHandler(method);
@@ -117,21 +119,23 @@ export function getFirebaseFunctionListToExport(): FirebaseFunctionList {
     });
 
   // Add HTTP methods to export
-  for (const fullMethodName in httpRequestFunctions) {
-    const name = fullMethodName.split('-');
-    const groupName = name.length > 1 ? name[0] : undefined;
-    const cloudFunctionName = name.length > 1 ? name[1] : name[0];
-    const methodHandler = getHTTPMethodHandler(fullMethodName, httpRequestFunctions[fullMethodName])
+  Object
+    .keys(httpRequestFunctions)
+    .forEach(fullMethodName => {
+      const name = fullMethodName.split('-');
+      const groupName = name.length > 1 ? name[0] : undefined;
+      const cloudFunctionName = name.length > 1 ? name[1] : name[0];
+      const methodHandler = getHTTPMethodHandler(fullMethodName, httpRequestFunctions[fullMethodName])
 
-    if (groupName) {
-      if (!result[groupName]) {
-        result[groupName] = {};
+      if (groupName) {
+        if (!result[groupName]) {
+          result[groupName] = {};
+        }
+        result[groupName][cloudFunctionName] = functions.https.onRequest(methodHandler as any);
+      } else {
+        result[cloudFunctionName] = functions.https.onRequest(methodHandler as any);
       }
-      result[groupName][cloudFunctionName] = functions.https.onRequest(methodHandler as any);
-    } else {
-      result[cloudFunctionName] = functions.https.onRequest(methodHandler as any);
-    }
-  }
+    });
 
   return result;
 }

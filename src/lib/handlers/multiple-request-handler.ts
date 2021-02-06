@@ -10,7 +10,7 @@ export function multipleRequestHandler(requestHandlerList: {[key: string]: Funct
     const req: Request = args[0];
     const res: Response = args[1];
 
-    const handler = requestHandlerList[req.method] || requestHandlerList['DEFAULT'];
+    const handler = requestHandlerList[req.method] || requestHandlerList.DEFAULT;
     if (handler) {
       return handler.apply(this, args);
     }
