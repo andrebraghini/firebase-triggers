@@ -333,6 +333,47 @@ ste método também aceita um parâmetro, que quando informado, passa a ser o no
 Considerando o exemplo acima, se o _decorator_ fosse declarado com parâmetro 'api' (ex: `@onRequest('api')`), neste caso a URL externa para a requisição HTTP seria `https://us-central1-project-name.cloudfunctions.net/api`, ignorando a regra de nomenclatura das classes de controle.
 
 
+### @GET(), @POST(), @PUT(), @PATCH(), @DELETE()
+
+Os _decorators_ `@GET()`, `@POST()`, `@PUT()`, `@PATCH()` e `@DELETE()` funcionam praticamente da mesma forma que o _decorator_ `@onRequest()`, com a diferença que cada um responde a um método HTTP exclusivo.
+
+Segue abaixo uma simulação de REST de dados de usuário usando os _decorators_ citados.
+Neste caso a URL externa para a requisição HTTP seria `https://us-central1-project-name.cloudfunctions.net/users`, ignorando a regra de nomenclatura das classes de controle.
+
+```ts
+import { GET, POST, PUT, PATCH, DELETE } from 'firebase-triggers';
+import { Request, Response } from 'firebase-functions';
+
+class UserCtrl {
+
+    @GET('users')
+    async get(request: Request, response: Response) {
+        response.json([]);
+    }
+
+    @POST('users')
+    async post(request: Request, response: Response) {
+        response.status(201).send();
+    }
+
+    @PUT('users')
+    async put(request: Request, response: Response) {
+        response.status(201).send();
+    }
+
+    @PATCH('users')
+    async patch(request: Request, response: Response) {
+        response.status(201).send();
+    }
+
+    @DELETE('users')
+    async del(request: Request, response: Response) {
+        response.status(201).send();
+    }
+}
+```
+
+
 #### Validação de esquema
 
 As requisições que usam o _decorator_ `@onRequest()` podem ser validadas através de arquivos de schema que devem estar na pasta `schema` com o nome exato da função que será exportada para o _Cloud Functions_.

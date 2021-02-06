@@ -331,6 +331,47 @@ This method also accepts a parameter, which when informed, becomes the name of t
 Considering the example above, if the decorator was declared with parameter 'api' (e.g. `@onRequest('api')`), in this case the external URL for the HTTP request would be `https://us-central1-project-name.cloudfunctions.net/api`, ignoring the control class naming rule.
 
 
+### @GET(), @POST(), @PUT(), @PATCH(), @DELETE()
+
+The decorators `@GET()`, `@POST()`, `@PUT()`, `@PATCH()` and `@DELETE()` work in much the same way as decorator `@onRequest()`, with the difference that each responds to a unique HTTP method.
+
+Below is a REST simulation of user data using the aforementioned decorators.
+In this case the external URL for the HTTP request would be `https://us-central1-project-name.cloudfunctions.net/users`, ignoring the control class naming rule.
+
+```ts
+import { GET, POST, PUT, PATCH, DELETE } from 'firebase-triggers';
+import { Request, Response } from 'firebase-functions';
+
+class UserCtrl {
+
+    @GET('users')
+    async get(request: Request, response: Response) {
+        response.json([]);
+    }
+
+    @POST('users')
+    async post(request: Request, response: Response) {
+        response.status(201).send();
+    }
+
+    @PUT('users')
+    async put(request: Request, response: Response) {
+        response.status(201).send();
+    }
+
+    @PATCH('users')
+    async patch(request: Request, response: Response) {
+        response.status(201).send();
+    }
+
+    @DELETE('users')
+    async del(request: Request, response: Response) {
+        response.status(201).send();
+    }
+}
+```
+
+
 #### Schema validation
 
 Requests using the `@onRequest()` decorator can be validated through schema files that must be in the `schema` folder with the exact name of the function that will be exported to Cloud Functions.
