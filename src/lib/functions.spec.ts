@@ -9,6 +9,11 @@ import {
   onPubSubPublish,
   onRequest,
   onPubSubSchedule,
+  GET,
+  POST,
+  PUT,
+  PATCH,
+  DELETE,
 } from './decorators';
 import { getFirebaseFunctionListToExport } from './functions';
 import { FirebaseFunctionList } from './types';
@@ -87,9 +92,63 @@ class SecondClassCtrl {
     return 'testTwo';
   }
 
-  @onRequest('unique-path')
+  @onRequest('uniquePath')
   httpRequestDiffName() {
     return 'httpRequestDiffName';
+  }
+
+  @GET()
+  getRequest() {
+    return 'getRequest';
+  }
+
+  @POST()
+  postRequest() {
+    return 'postRequest';
+  }
+
+  @PUT()
+  putRequest() {
+    return 'putRequest';
+  }
+
+  @PATCH()
+  patchRequest() {
+    return 'patchRequest';
+  }
+
+  @DELETE()
+  deleteRequest() {
+    return 'deleteRequest';
+  }
+}
+
+// tslint:disable-next-line: max-classes-per-file
+class ThirdClassCtrl {
+
+  @GET('rest')
+  get() {
+    return 'get';
+  }
+
+  @POST('rest')
+  post() {
+    return 'post';
+  }
+
+  @PUT('rest')
+  put() {
+    return 'put';
+  }
+
+  @PATCH('rest')
+  patch() {
+    return 'patch';
+  }
+
+  @DELETE('rest')
+  del() {
+    return 'del';
   }
 }
 
@@ -123,7 +182,21 @@ describe('getFirebaseFunctionListToExport()', () => {
     expect((result.secondClass as FirebaseFunctionList).testOne).toBeDefined();
     expect((result.secondClass as FirebaseFunctionList).testTwo).toBeDefined();
     expect((result.secondClass as FirebaseFunctionList).httpRequestDiffName).toBeUndefined();
-    expect((result.secondClass as FirebaseFunctionList)['unique-path-*']).toBeUndefined();
-    expect(result['unique-path']).toBeDefined();
+    expect((result.secondClass as FirebaseFunctionList)['uniquePath*']).toBeUndefined();
+    expect(result['uniquePath']).toBeDefined();
+    expect((result.secondClass as FirebaseFunctionList).getRequest).toBeDefined();
+    expect((result.secondClass as FirebaseFunctionList).postRequest).toBeDefined();
+    expect((result.secondClass as FirebaseFunctionList).putRequest).toBeDefined();
+    expect((result.secondClass as FirebaseFunctionList).patchRequest).toBeDefined();
+    expect((result.secondClass as FirebaseFunctionList).deleteRequest).toBeDefined();
+  });
+
+  it('should contain just the "rest" method of ThirdClassCtrl', () => {
+    // Execute
+    const result = getFirebaseFunctionListToExport();
+
+    // Validate
+    expect(result.thirdClass).toBeUndefined();
+    expect(result.rest).toBeDefined();
   });
 });

@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 import { existsSync } from 'fs';
 import { resolve } from 'path';
 import { requestErrorHandler } from './handlers';
-import { acceptedMethodsHandler } from './handlers/accepted-method-handler';
+import { multipleRequestHandler } from './handlers/multiple-request-handler';
 import { requestSchemaValidatorHandler } from './handlers/request-schema-validator-handler';
 import { getFirebaseFunctionList, getGroupName } from './internal-methods';
 import { FirebaseFunction, FirebaseTriggerType, FirebaseFunctionList } from './types';
@@ -50,61 +50,88 @@ function getCloudFunctionName(func: FirebaseFunction): string {
   return func.methodName;
 }
 
-/**
- * Returns method that will be executed with schema validation handling if there is a schema
- * in the application's schema folder with the same name as the method and also a generic
- * treatment for untreated HTTP request errors.
- * @param fullMethodName Full method name generated in Cloud Functions
- * @param func Function data
- */
-function getMethodHandler(fullMethodName: string, func: FirebaseFunction): Function {
-  let method = func.method;
+function getHTTPMethodHandler(fullMethodName: string, httpRequestFunctions: {[httpMethod: string]: Function}): Function {
+  const requestHandlerList: {[key: string]: Function} = {};
 
-  if (func.trigger === FirebaseTriggerType.HTTP_REQUEST) {
-    const schemaFile = resolve(`${__dirname}/schema/${fullMethodName}.json`);
+  for (const httpMethod in httpRequestFunctions) {
+    let specificMethod = httpRequestFunctions[httpMethod];
+
+    const schemaFileFileName = `${fullMethodName}${httpMethod === 'DEFAULT' ? '' : `_${httpMethod}`}.json`;
+    const schemaFile = resolve(`${__dirname}/schema/${schemaFileFileName}`);
     if (existsSync(schemaFile)) {
-      method = requestSchemaValidatorHandler(method, schemaFile);
+      specificMethod = requestSchemaValidatorHandler(specificMethod, schemaFile);
     }
 
-    if (func.key && typeof func.key !== 'string') {
-      if (func.key.methods) {
-        const methods = Array.isArray(func.key.methods) ? func.key.methods : [func.key.methods];
-        method = acceptedMethodsHandler(method, methods);
-      }
-    }
-
-    method = requestErrorHandler(method);
+    requestHandlerList[httpMethod] = specificMethod;
   }
 
+  let method = multipleRequestHandler(requestHandlerList);
+  method = requestErrorHandler(method);
   return method;
 }
 
 /**
- * Returns list of methods linked to triggers to export at application startup
+ * Returns a list of methods linked to triggers to export at application startup
  */
 export function getFirebaseFunctionListToExport(): FirebaseFunctionList {
   const result: FirebaseFunctionList = {};
+  const httpRequestFunctions: {
+    [fullMethodName: string]: {
+      [httpMethod: string]: Function
+    }
+  } = {};
 
   const functionList = getFirebaseFunctionList();
-  functionList.forEach((func) => {
-    const triggerMethod = triggerMethods[func.trigger];
-    if (triggerMethod) {
-      const groupName = getGroupName(func);
-      const cloudFunctionName = getCloudFunctionName(func);
+  
+  // Add methods to export, except HTTP methods
+  functionList
+    .forEach((func) => {
+      const triggerMethod = triggerMethods[func.trigger];
+      if (triggerMethod) {
+        const groupName = getGroupName(func);
+        const cloudFunctionName = getCloudFunctionName(func);
+        const fullMethodName = groupName ? `${groupName}-${cloudFunctionName}` : cloudFunctionName;
 
-      const fullMethodName = `${groupName}-${cloudFunctionName}`;
-      const methodHandler = getMethodHandler(fullMethodName, func);
+        if (func.trigger === FirebaseTriggerType.HTTP_REQUEST) {
+          const methods = !func.key ? ['DEFAULT'] : (Array.isArray(func.key.methods) ? func.key.methods : [func.key.methods || 'DEFAULT']);
+          if (!httpRequestFunctions[fullMethodName]) {
+            httpRequestFunctions[fullMethodName] = {};
+          }
+          
+          methods.forEach(httpMethod => {
+            httpRequestFunctions[fullMethodName][httpMethod] = func.method;
+          });
 
-      if (groupName) {
-        if (!result[groupName]) {
-          result[groupName] = {};
+          return;
         }
-        result[groupName][cloudFunctionName] = triggerMethod(methodHandler, func.key);
-      } else {
-        result[cloudFunctionName] = triggerMethod(methodHandler, func.key);
+
+        if (groupName) {
+          if (!result[groupName]) {
+            result[groupName] = {};
+          }
+          result[groupName][cloudFunctionName] = triggerMethod(func.method, func.key);
+        } else {
+          result[cloudFunctionName] = triggerMethod(func.method, func.key);
+        }
       }
+    });
+
+  // Add HTTP methods to export
+  for (const fullMethodName in httpRequestFunctions) {
+    const name = fullMethodName.split('-');
+    const groupName = name.length > 1 ? name[0] : undefined;
+    const cloudFunctionName = name.length > 1 ? name[1] : name[0];
+    const methodHandler = getHTTPMethodHandler(fullMethodName, httpRequestFunctions[fullMethodName])
+
+    if (groupName) {
+      if (!result[groupName]) {
+        result[groupName] = {};
+      }
+      result[groupName][cloudFunctionName] = functions.https.onRequest(methodHandler as any);
+    } else {
+      result[cloudFunctionName] = functions.https.onRequest(methodHandler as any);
     }
-  });
+  }
 
   return result;
 }
