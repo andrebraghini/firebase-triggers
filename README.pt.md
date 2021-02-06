@@ -41,6 +41,9 @@
 
 4. [Validação de esquema](#validação-de-esquema)
 
+5. [Projeto de exemplo](https://github.com/andrebraghini/firebase-triggers-sample)
+
+
 ## Instalação
 
 `npm install --save firebase-triggers`
@@ -76,138 +79,22 @@ import 'reflect-metadata';
 import { getFirebaseFunctionListToExport, onFirestoreCreate, onRequest } from 'firebase-triggers';
 
 class MyCtrl {
-  @onFirestoreCreate('todo/{id}')
-  docWrite(snapshot, context) {
-    const data = snapshot.data();
-    console.log(`New task added: ${data.title} at ${data.time}`);
-  }
+    @onFirestoreCreate('todo/{id}')
+    docWrite(snapshot, context) {
+        const data = snapshot.data();
+        console.log(`New task added: ${data.title} at ${data.time}`);
+    }
 
-  @onRequest('hello-world')
-  httpRequest(request, response) {
-    response.send('Hello World!');
-  }
+    @onRequest('hello-world')
+    httpRequest(request, response) {
+        response.send('Hello World!');
+    }
 }
 
 // Obtém as "Cloud Functions" encontradas no código de exporta cada uma
 const list = getFirebaseFunctionListToExport();
 for (const key in list) {
-  exports[key] = list[key];
-}
-```
-
-
-### Exemplo completo
-
-```ts
-import 'reflect-metadata';
-import {
-  getFirebaseFunctionListToExport,
-  onFirebaseUserCreate,
-  onFirebaseUserDelete,
-  onFirestoreCreate,
-  onFirestoreUpdate,
-  onFirestoreDelete,
-  onFirestoreWrite,
-  onPubSubPublish,
-  onRequest,
-  onPubSubSchedule,
-} from 'firebase-triggers';
-
-class MyCtrl {
-  @onFirebaseUserCreate()
-  userCreate(user, context) {
-    console.log(`${user.displayName} se juntou a nós`);
-  }
-
-  @onFirebaseUserDelete()
-  userDelete(user, context) {
-    console.log(`${user.displayName} nos deixou`);
-  }
-
-  @onFirestoreCreate('todo/{id}')
-  docCreate(snapshot, context) {
-    // Pega um objeto representando o documento. ex: { title: 'Lavar a louça', time: '12:00' }
-    const newValue = snapshot.data();
-    // acessar um determinado campo como faria com qualquer propriedade JS
-    const title = newValue.title;
-    const time = newValue.time;
-
-    console.log(`Nova tarefa adicionada: ${title} às ${time}`);
-  }
-
-  @onFirestoreUpdate('todo/{id}')
-  docUpdate(change, context) {
-    // Pega um objeto representando o documento. ex: { title: 'Lavar a louça', time: '12:00' }
-    const newValue = change.after.data();
-    // ...ou valor anterior a esta atualização(update)
-    const previousValue = change.before.data();
-    // acessar um determinado campo como faria com qualquer propriedade JS
-    const newTitle = newValue.title;
-    const oldTitle = previousValue.title;
-
-    console.log(`Alterado título de "${oldTitle}" para "${newTitle}"`);
-  }
-
-  @onFirestoreDelete('todo/{id}')
-  docDelete(snapshot, context) {
-    // Pega um objeto representando o documento. ex: { title: 'Lavar a louça', time: '12:00' }
-    const oldValue = snapshot.data();
-    // acessar um determinado campo como faria com qualquer propriedade JS
-    const title = oldValue.title;
-
-    console.log(`Tarefa "${title}" removida`);
-  }
-
-  @onFirestoreWrite('todo/{id}')
-  docWrite(change, context) {
-    // Pega um objeto com o valor do documento atual. Se o documento não existir, ele foi removido.
-    const newDocument = change.after.exists ? change.after.data() : null;
-    // Pega um objeto com o valor do documento anterior (para uma atualização ou remoção (update ou delete)
-    const oldDocument = change.before.exists ? change.before.data() : null;
-
-    if (!newDocument) {
-      const title = oldDocument.title;
-      console.log(`Tarefa "${title}" removida`);
-      return;
-    }
-
-    if (!oldDocument) {
-      const title = newDocument.title;
-      const time = newDocument.time;
-      console.log(`Nova tarefa adicionada: ${title} às ${time}`);
-      return;
-    }
-
-    const newTitle = newDocument.title;
-    const oldTitle = oldDocument.title;
-
-    console.log(`Título alterado de "${oldTitle}" para "${newTitle}"`);
-  }
-
-  @onPubSubPublish('meu-topico')
-  pubsubSubscribe(message, context) {
-    const publishedData = message.json;
-    console.log('Dados publicados via PubSub em meu-topico:', publishedData);
-  }
-
-  @onPubSubSchedule('0 5 * * *')
-  everyDayAtFiveAM(context) {
-    console.log('Método executado todos os dias às 5 horas da manhã');
-  }
-
-  @onRequest('myCaminhoPersonalizado')
-  httpRequest(request, response) {
-    const requestBody = request.body;
-    console.log({ requestBody });
-
-    response.send('Hello World!');
-  }
-}
-
-// Obtém as "Cloud Functions" encontradas no código de exporta cada uma
-const list = getFirebaseFunctionListToExport();
-for (const key in list) {
-  exports[key] = list[key];
+    exports[key] = list[key];
 }
 ```
 
@@ -218,33 +105,173 @@ Para definir gatilhos do _Firebase Functions_, basta adicionar o _decorator_ des
 
 Ex: `import { onRequest } from 'firebase-triggers';`
 
+
 ### @onFirebaseUserCreate()
 
 Adicione o *decorator* `@onFirebaseUserCreate()` em um método para ser executado sempre que um novo usuário for criado no *Firebase Authentication*.
+
+```ts
+import { onFirebaseUserCreate } from 'firebase-triggers';
+import { UserRecord } from 'firebase-functions/lib/providers/auth';
+import { EventContext } from 'firebase-functions';
+
+class UserCtrl {
+    @onFirebaseUserCreate()
+    onCreate(user: UserRecord, context: EventContext) {
+        console.log(`${user.displayName} joined us`);
+    }
+}
+```
+
 
 ### @onFirebaseUserDelete()
 
 Adicione o *decorator* `@onFirebaseUserDelete()` em um método para ser executado sempre que um usuário for removido do *Firebase Authentication*.
 
+```ts
+import { onFirebaseUserDelete } from 'firebase-triggers';
+import { UserRecord } from 'firebase-functions/lib/providers/auth';
+import { EventContext } from 'firebase-functions';
+
+class UserCtrl {
+    @onFirebaseUserDelete()
+    onDelete(user: UserRecord, context: EventContext) {
+        console.log(`${user.displayName} left us`);
+    }
+}
+```
+
+
 ### @onFirestoreCreate()
 
 Adicione o *decorator* `@onFirestoreCreate()` em um método para ser executado sempre que um novo documento for **criado** no Firestore, na *collection* definida parâmetro do *decorator*.
+
+```ts
+import { onFirestoreCreate } from 'firebase-triggers';
+import { QueryDocumentSnapshot } from 'firebase-functions/lib/providers/firestore';
+import { EventContext } from 'firebase-functions';
+
+class TodoCtrl {
+    @onFirestoreCreate('todo/{id}')
+    onCreate(snapshot: QueryDocumentSnapshot, context: EventContext) {
+        // Pega um objeto representando o documento. ex: { title: 'Lavar a louça', time: '12:00' }
+        const newValue = snapshot.data();
+        // acessar um determinado campo como faria com qualquer propriedade JS
+        const title = newValue.title;
+        const time = newValue.time;
+
+        console.log(`New task added: ${title} at ${time}`);
+    }
+}
+```
+
 
 ### @onFirestoreUpdate()
 
 Adicione o *decorator* `@onFirestoreUpdate()` em um método para ser executado sempre que um documento existente for **alterado** no Firestore, na *collection* definida parâmetro no *decorator*.
 
+```ts
+import { onFirestoreUpdate } from 'firebase-triggers';
+import { QueryDocumentSnapshot } from 'firebase-functions/lib/providers/firestore';
+import { Change, EventContext } from 'firebase-functions';
+
+class TodoCtrl {
+    @onFirestoreUpdate('todo/{id}')
+    onUpdate(change: Change<QueryDocumentSnapshot>, context: EventContext) {
+        // Pega um objeto representando o documento. ex: { title: 'Lavar a louça', time: '12:00' }
+        const newValue = change.after.data();
+        // ...ou valor anterior a esta atualização(update)
+        const previousValue = change.before.data();
+        // acessar um determinado campo como faria com qualquer propriedade JS
+        const newTitle = newValue.title;
+        const oldTitle = previousValue.title;
+
+        console.log(`Changed the title from "${oldTitle}" to "${newTitle}"`);
+    }
+}
+```
+
+
 ### @onFirestoreDelete()
 
 Adicione o *decorator* `@onFirestoreDelete()` em um método para ser executado sempre que um documento for **removido** do Firestore, na *collection* definida parâmetro no *decorator*.
+
+```ts
+import { onFirestoreDelete } from 'firebase-triggers';
+import { QueryDocumentSnapshot } from 'firebase-functions/lib/providers/firestore';
+import { EventContext } from 'firebase-functions';
+
+class TodoCtrl {
+    @onFirestoreDelete('todo/{id}')
+    onDelete(snapshot: QueryDocumentSnapshot, context: EventContext) {
+        // Pega um objeto representando o documento. ex: { title: 'Lavar a louça', time: '12:00' }
+        const oldValue = snapshot.data();
+        // acessar um determinado campo como faria com qualquer propriedade JS
+        const title = oldValue.title;
+
+        console.log(`Task "${title}" removed`);
+    }
+}
+```
+
 
 ### @onFirestoreWrite()
 
 Adicione o *decorator* `onFirestoreWrite()` em um método para ser executado sempre que um documento for **criado, alterado ou removido** do Firestore, na *collection* definida como parâmetro do *decorator*.
 
+```ts
+import { onFirestoreWrite } from 'firebase-triggers';
+import { QueryDocumentSnapshot } from 'firebase-functions/lib/providers/firestore';
+import { Change, EventContext } from 'firebase-functions';
+
+class TodoCtrl {
+    @onFirestoreWrite('todo/{id}')
+    onWrite(change: Change<QueryDocumentSnapshot>, context: EventContext) {
+        // Pega um objeto com o valor do documento atual. Se o documento não existir, ele foi removido.
+        const newDocument = change.after.exists ? change.after.data() : null;
+        // Pega um objeto com o valor do documento anterior (para uma atualização ou remoção (update ou delete)
+        const oldDocument = change.before.exists ? change.before.data() : null;
+
+        if (!newDocument) {
+            const title = oldDocument.title;
+            console.log(`Task "${title}" removed`);
+            return;
+        }
+
+        if (!oldDocument) {
+            const title = newDocument.title;
+            const time = newDocument.time;
+            console.log(`New task added: ${title} at ${time}`);
+            return;
+        }
+
+        const newTitle = newDocument.title;
+        const oldTitle = oldDocument.title;
+
+        console.log(`Changed the title from "${oldTitle}" to "${newTitle}"`);
+    }
+}
+```
+
+
 ### @onPubSubPublish()
 
 Adicione o *decorator* `@onPubSubPublish()` em um método para ser executado sempre que for feita uma publicação via PubSub no tópico definido como parâmetro no *decorator*.
+
+```ts
+import { onPubSubPublish } from 'firebase-triggers';
+import { Message } from 'firebase-functions/lib/providers/pubsub';
+import { EventContext } from 'firebase-functions';
+
+class SampleCtrl {
+    @onPubSubPublish('my-topic')
+    doSomething(message: Message, context: EventContext) {
+        const publishedData = message.json;
+        console.log('Data published via PubSub on my-topic:', publishedData);
+    }
+}
+```
+
 
 ### @onPubSubSchedule()
 
@@ -255,25 +282,56 @@ Como alternativa pode informar um fuso horário diferente da seguinte forma: `@o
 
 Para entender melhor como definir o horário usando o padrão do cron veja um exemplo no site [https://crontab.guru](https://crontab.guru).
 
+```ts
+import { onPubSubSchedule } from 'firebase-triggers';
+import { EventContext } from 'firebase-functions';
+
+class TimerCtrl {
+    @onPubSubSchedule('0 5 * * *')
+    everyDayAtFiveAM(context: EventContext) {
+        console.log('Method executed every day at 5 AM');
+    }
+}
+```
+
+
 ### @onRequest()
 
 Adicione o decorator `@onRequest()` em um método para ser executado sempre que uma requisição HTTP for feita para o endereço do projeto no Cloud Functions seguido do nome de classe e do método, usando *camelCase* e ignorando o sufixo `Ctrl` da nomenclatura das classes de controle.
 
-Ex: Considerando o código abaixo, onde o nome da classe é `UserCtrl` e o método é nomeado como `getProfile()`, logo a URL externa para a requisição HTTP seria `https://us-central1-project-name.cloudfunctions.net/user-getProfile`.
+Ex: Considerando o código abaixo, onde o nome da classe é `UserCtrl` e o método é nomeado como `profile()`, logo a URL externa para a requisição HTTP seria `https://us-central1-project-name.cloudfunctions.net/user-profile`.
 
 ```ts
+import { onRequest } from 'firebase-triggers';
+import { Request, Response } from 'firebase-functions';
+
 class UserCtrl {
-  @onRequest()
-  async getProfile(req, res) {
-    const profile = await loadProfile(req.body.id);
-    res.json(profile);
-  }
+
+    /*
+     * Este método será exportado como "user-profile" no Cloud Functions
+     * ex: https://us-central1-project-name.cloudfunctions.net/user-profile
+     */
+    @onRequest()
+    async profile(request: Request, response: Response) {
+        const profile = await loadProfile(request.body.id);
+        response.json(profile);
+    }
+
+    /*
+     * Este método será exportado como "hello" no Cloud Functions
+     * ex: https://us-central1-project-name.cloudfunctions.net/hello
+     */
+    @onRequest('hello')
+    async sample(request: Request, response: Response) {
+        response.send('Hello World!');
+    }
 }
 ```
 
-Este método também aceita um parâmetro, que quando informado, passa a ser o nome da função no _Cloud Functions_ e também o sufixo da URL para requisição.
+ste método também aceita um parâmetro, que quando informado, passa a ser o nome da função no _Cloud Functions_ e também o sufixo da URL para requisição.
 
 Considerando o exemplo acima, se o _decorator_ fosse declarado com parâmetro 'api' (ex: `@onRequest('api')`), neste caso a URL externa para a requisição HTTP seria `https://us-central1-project-name.cloudfunctions.net/api`, ignorando a regra de nomenclatura das classes de controle.
+
 
 #### Validação de esquema
 
@@ -281,3 +339,5 @@ As requisições que usam o _decorator_ `@onRequest()` podem ser validadas atrav
 Se o arquivo existir a validação será feita.
 
 Também é possível no lado do cliente visualizar os arquivos de schema adicionando o sufixo `/schema.json` na URL do método exportado.
+
+Você pode usar o site [jsonschema.net](https://jsonschema.net/) para gerar seus próprios schemas JSON.
