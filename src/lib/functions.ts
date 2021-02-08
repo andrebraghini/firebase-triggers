@@ -60,7 +60,7 @@ function getHTTPMethodHandler(
     let specificMethod = httpRequestFunctions[httpMethod];
 
     const schemaFileFileName = `${fullMethodName}${httpMethod === 'DEFAULT' ? '' : `_${httpMethod}`}.json`;
-    const schemaFile = resolve(`${__dirname}/schema/${schemaFileFileName}`);
+    const schemaFile = resolve(`schema/${schemaFileFileName}`);
     if (existsSync(schemaFile)) {
       specificMethod = requestSchemaValidatorHandler(specificMethod, schemaFile);
     }
