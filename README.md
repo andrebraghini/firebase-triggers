@@ -379,7 +379,7 @@ If the file exists, validation will be performed.
 
 Using the decorators `@GET()`, `@POST()`, `@PUT()`, `@PATCH()` or `@DELETE()`, it is necessary to add a suffix separated by an underscore in the name of the schema file for every need.
 
-__Exemplos:__
+__Samples:__
 
 `user-update.json` (Applied when using @onRequest() without specifying the HTTP method)
 
