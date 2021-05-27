@@ -29,8 +29,12 @@ class DemoCtrl {
   { decorator: 'onStorageArchive', methodName: 'archiveFile', trigger: FirebaseTriggerType.STORAGE_ARCHIVE },
   { decorator: 'onStorageDelete', methodName: 'deleteFile', trigger: FirebaseTriggerType.STORAGE_DELETE },
   { decorator: 'onStorageFinalize', methodName: 'finalizeFile', trigger: FirebaseTriggerType.STORAGE_FINALIZE },
-  { decorator: 'onStorageMetadataUpdate', methodName: 'updateMetadata', trigger: FirebaseTriggerType.STORAGE_METADATA_UPDATE },
-].forEach(test => {
+  {
+    decorator: 'onStorageMetadataUpdate',
+    methodName: 'updateMetadata',
+    trigger: FirebaseTriggerType.STORAGE_METADATA_UPDATE,
+  },
+].forEach((test) => {
   describe(`@${test.decorator}()`, () => {
     it(`should have ${test.methodName}() method on the Firebase Function List on memory`, () => {
       // Setup

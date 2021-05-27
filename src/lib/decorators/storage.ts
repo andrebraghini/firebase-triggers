@@ -8,7 +8,7 @@ function getStorageFunction(trigger: FirebaseTriggerType) {
       methodName: key,
       method: getClassMethod(target, key),
       trigger,
-      key: bucketName
+      key: bucketName,
     };
     addFirebaseFunction(firebaseFunction);
   };

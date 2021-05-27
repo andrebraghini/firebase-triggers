@@ -115,8 +115,8 @@ export function getFirebaseFunctionListToExport(): FirebaseFunctionList {
         const methods = !func.key
           ? ['DEFAULT']
           : Array.isArray(func.key.methods)
-            ? func.key.methods
-            : [func.key.methods || 'DEFAULT'];
+          ? func.key.methods
+          : [func.key.methods || 'DEFAULT'];
         if (!httpRequestFunctions[fullMethodName]) {
           httpRequestFunctions[fullMethodName] = {};
         }
