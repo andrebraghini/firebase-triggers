@@ -9,6 +9,7 @@ import { FirebaseFunction, FirebaseTriggerType, FirebaseFunctionList } from './t
 
 /** Methods used to register Firebase triggers */
 const triggerMethods = {
+  CALLABLE: (handler: any) => functions.https.onCall(handler),
   USER_CREATE: (handler: any) => functions.auth.user().onCreate(handler),
   USER_DELETE: (handler: any) => functions.auth.user().onDelete(handler),
   HTTP_REQUEST: (handler: any) => functions.https.onRequest(handler),
@@ -30,6 +31,22 @@ const triggerMethods = {
       return functions.pubsub.schedule(scheduleObj.interval).timeZone(scheduleObj.timezone).onRun(handler);
     }
     return functions.pubsub.schedule(scheduleObj.interval).onRun(handler);
+  },
+  STORAGE_ARCHIVE: (handler: any, bucket?: string) => {
+    const obj = bucket ? functions.storage.bucket(bucket).object() : functions.storage.object();
+    return obj.onArchive(handler);
+  },
+  STORAGE_DELETE: (handler: any, bucket?: string) => {
+    const obj = bucket ? functions.storage.bucket(bucket).object() : functions.storage.object();
+    return obj.onDelete(handler);
+  },
+  STORAGE_FINALIZE: (handler: any, bucket?: string) => {
+    const obj = bucket ? functions.storage.bucket(bucket).object() : functions.storage.object();
+    return obj.onFinalize(handler);
+  },
+  STORAGE_METADATA_UPDATE: (handler: any, bucket?: string) => {
+    const obj = bucket ? functions.storage.bucket(bucket).object() : functions.storage.object();
+    return obj.onMetadataUpdate(handler);
   },
 };
 
@@ -98,8 +115,8 @@ export function getFirebaseFunctionListToExport(): FirebaseFunctionList {
         const methods = !func.key
           ? ['DEFAULT']
           : Array.isArray(func.key.methods)
-          ? func.key.methods
-          : [func.key.methods || 'DEFAULT'];
+            ? func.key.methods
+            : [func.key.methods || 'DEFAULT'];
         if (!httpRequestFunctions[fullMethodName]) {
           httpRequestFunctions[fullMethodName] = {};
         }

@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import {
+  onCall,
   onFirebaseUserCreate,
   onFirebaseUserDelete,
   onFirestoreCreate,
@@ -9,6 +10,10 @@ import {
   onPubSubPublish,
   onRequest,
   onPubSubSchedule,
+  onStorageArchive,
+  onStorageDelete,
+  onStorageFinalize,
+  onStorageMetadataUpdate,
   GET,
   POST,
   PUT,
@@ -19,6 +24,11 @@ import { getFirebaseFunctionListToExport } from './functions';
 import { FirebaseFunctionList } from './types';
 
 class DemoCtrl {
+  @onCall()
+  callableMethod() {
+    return 'callableMethod';
+  }
+
   @onFirebaseUserCreate()
   userCreate() {
     return 'userCreate';
@@ -151,12 +161,36 @@ class ThirdClassCtrl {
   }
 }
 
+// tslint:disable-next-line: max-classes-per-file
+class StorageCtrl {
+  @onStorageArchive('bucketName')
+  archive() {
+    return 'archive';
+  }
+
+  @onStorageDelete('bucketName')
+  del() {
+    return 'del';
+  }
+
+  @onStorageFinalize('bucketName')
+  finalize() {
+    return 'finalize';
+  }
+
+  @onStorageMetadataUpdate('bucketName')
+  updateMetadata() {
+    return 'updateMetadata';
+  }
+}
+
 describe('getFirebaseFunctionListToExport()', () => {
   it('should contain DemoCtrl class methods', () => {
     // Execute
     const result = getFirebaseFunctionListToExport();
 
     // Validate
+    expect((result.demo as FirebaseFunctionList).callableMethod).toBeDefined();
     expect((result.demo as FirebaseFunctionList).userCreate).toBeDefined();
     expect((result.demo as FirebaseFunctionList).userDelete).toBeDefined();
     expect((result.demo as FirebaseFunctionList).docCreate).toBeDefined();
@@ -197,5 +231,16 @@ describe('getFirebaseFunctionListToExport()', () => {
     // Validate
     expect(result.thirdClass).toBeUndefined();
     expect(result.rest).toBeDefined();
+  });
+
+  it('should contain StorageCtrl class methods', () => {
+    // Execute
+    const result = getFirebaseFunctionListToExport();
+
+    // Validate
+    expect((result.storage as FirebaseFunctionList).archive).toBeDefined();
+    expect((result.storage as FirebaseFunctionList).del).toBeDefined();
+    expect((result.storage as FirebaseFunctionList).finalize).toBeDefined();
+    expect((result.storage as FirebaseFunctionList).updateMetadata).toBeDefined();
   });
 });

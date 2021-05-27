@@ -1,3 +1,4 @@
+export * from './callable';
 export * from './firebase-user-create';
 export * from './firebase-user-delete';
 export * from './firestore-create';
@@ -7,3 +8,4 @@ export * from './firestore-write';
 export * from './pubsub-publish';
 export * from './pubsub-schedule';
 export * from './request';
+export * from './storage';

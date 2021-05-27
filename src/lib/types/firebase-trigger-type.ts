@@ -2,6 +2,9 @@
  * Action to trigger a Cloud Function
  */
 export enum FirebaseTriggerType {
+  /** Triggered as a callable function */
+  CALLABLE = 'CALLABLE',
+
   /** Triggered when a new user is created on Firebase Authentication */
   USER_CREATE = 'USER_CREATE',
 
@@ -28,4 +31,16 @@ export enum FirebaseTriggerType {
 
   /** Triggered by HTTP requests */
   HTTP_REQUEST = 'HTTP_REQUEST',
+
+  /** Triggered when a file is archived */
+  STORAGE_ARCHIVE = 'STORAGE_ARCHIVE',
+  
+  /** Triggered when a file is deleted */
+  STORAGE_DELETE = 'STORAGE_DELETE',
+  
+  /** Triggered when a file finalize the upload */
+  STORAGE_FINALIZE = 'STORAGE_FINALIZE',
+  
+  /** Triggered when a file metadata is updated */
+  STORAGE_METADATA_UPDATE = 'STORAGE_METADATA_UPDATE',
 }

@@ -396,3 +396,65 @@ __Samples:__
 It is also possible on the client side to view the schema files by adding the suffix `/schema.json` to the URL of the exported method.
 
 You can use the [jsonschema.net](https://jsonschema.net/) to generate your JSON schemas.
+
+
+### @onCall()
+
+Add the decorator `@onCall()` to a method so you can call it straight from the Firebase SDK.
+They call it [Callable methods](https://firebase.google.com/docs/functions/callable-reference).
+
+The method name will be prefixed with the class name, using *camelCase* and ignoring the `Ctrl` suffix of the control class nomenclature.
+
+```ts
+import 'reflect-metadata';
+import { EventContext } from 'firebase-functions';
+
+class TodoCtrl {
+    @onCall()
+    add(data, context: EventContext) {
+        console.log('Add new todo', data);
+    }
+}
+```
+
+
+### @onStorageArchive(), @onStorageDelete(), @onStorageFinalize(), @onStorageMetadataUpdate()
+
+Add the decorator `onStorageArchive()` to a method to be executed whenever an item is archived on Cloud Storage.
+
+Add the decorator `onStorageDelete()` to a method to be executed whenever an item is removed from Cloud Storage.
+
+Add the decorator `onStorageFinalize()` to a method to be executed whenever an item is finished uploading on Cloud Storage.
+
+Add the decorator `onStorageMetadataUpdate()` to a method to be executed whenever an item metadata is updated on _Cloud Storage_.
+
+If the bucket is empty, the method will be executed for all buckets.
+See [Cloud Storage Events](https://firebase.google.com/docs/functions/gcp-storage-events).
+
+```ts
+import 'reflect-metadata';
+import { EventContext } from 'firebase-functions';
+import { ObjectMetadata } from 'firebase-functions/lib/providers/storage';
+
+class TodoCtrl {
+    @onStorageArchive('bucketName')
+    add(object: ObjectMetadata, context: EventContext) {
+        console.log(`File ${object.name} archived`);
+    }
+    
+    @onStorageDelete('bucketName')
+    del(object: ObjectMetadata, context: EventContext) {
+        console.log(`File ${object.name} deleted`);
+    }
+
+    @onStorageFinalize('bucketName')
+    uploaded(object: ObjectMetadata, context: EventContext) {
+        console.log(`File ${object.name} uploaded`);
+    }
+
+    @onStorageMetadataUpdate('bucketName')
+    updateMetadata(object: ObjectMetadata, context: EventContext) {
+        console.log(`File ${object.name} updated`);
+    }
+}
+```
