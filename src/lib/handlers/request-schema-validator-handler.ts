@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions';
-import * as Ajv from 'ajv';
+import Ajv from 'ajv';
 import { readFileSync } from 'fs';
 import { SCHEMA_INVALID } from '../errors';
 
