@@ -8,8 +8,8 @@ describe('requestSchemaValidatorHandler()', () => {
   const res = {
     status: jest.fn(),
     json: jest.fn(),
-    sendFile: jest.fn()
-  }
+    sendFile: jest.fn(),
+  };
   const emailAndPasswordSchema = {
     $schema: 'http://json-schema.org/draft-07/schema',
     type: 'object',
@@ -17,13 +17,13 @@ describe('requestSchemaValidatorHandler()', () => {
     properties: {
       email: {
         $id: '#/properties/email',
-        type: 'string'
+        type: 'string',
       },
       password: {
         $id: '#/properties/password',
-        type: 'string'
-      }
-    }
+        type: 'string',
+      },
+    },
   };
 
   beforeEach(() => {
@@ -31,7 +31,7 @@ describe('requestSchemaValidatorHandler()', () => {
     res.status.mockReturnThis();
     res.json.mockReturnThis();
     res.sendFile.mockReturnThis();
-  })
+  });
 
   it('should return schema when called with /schema.json', () => {
     // Setup
@@ -64,13 +64,13 @@ describe('requestSchemaValidatorHandler()', () => {
       path: '',
       body: {
         email: 'john@fbtrs_test.io',
-        password: 'abc123'
-      }
+        password: 'abc123',
+      },
     };
     (readFileSync as jest.Mock).mockReturnValue({
-      toString: () => JSON.stringify(emailAndPasswordSchema)
+      toString: () => JSON.stringify(emailAndPasswordSchema),
     });
-    
+
     const originalMethod = jest.fn();
 
     // Execute
@@ -85,17 +85,17 @@ describe('requestSchemaValidatorHandler()', () => {
     // Setup
     const req = {
       path: '',
-      body: { password: 'abc123' }
+      body: { password: 'abc123' },
     };
     const expectedResponse = {
       success: false,
       error: SCHEMA_INVALID,
-      validations: {}
+      validations: {},
     };
     (readFileSync as jest.Mock).mockReturnValue({
-      toString: () => JSON.stringify(emailAndPasswordSchema)
+      toString: () => JSON.stringify(emailAndPasswordSchema),
     });
-    
+
     const originalMethod = jest.fn();
 
     // Execute
