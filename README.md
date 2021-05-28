@@ -438,7 +438,7 @@ import { ObjectMetadata } from 'firebase-functions/lib/providers/storage';
 
 class TodoCtrl {
     @onStorageArchive('bucketName')
-    add(object: ObjectMetadata, context: EventContext) {
+    archive(object: ObjectMetadata, context: EventContext) {
         console.log(`File ${object.name} archived`);
     }
     
