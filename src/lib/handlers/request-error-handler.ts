@@ -11,7 +11,7 @@ export function requestErrorHandler(requestHandler: Function): Function {
     const res: functions.Response = args[1];
     try {
       requestHandler.apply(this, args);
-    } catch (error) {
+    } catch (error: any) {
       res.status(error.responseCode || 500).json({
         success: false,
         error: mergeError(INTERNAL_ERROR, { error }),

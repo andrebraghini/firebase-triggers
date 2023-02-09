@@ -83,7 +83,7 @@ export function onRequest(opt?: RequestOptions & FirebaseOptions, runtimeOptions
 export function GET(path?: string | FirebaseOptions, options?: FirebaseOptions) {
   return (target: any, key: string) => {
     const parsedPath = typeof path === 'string' ? path : undefined;
-    const parsedOptions = options || (typeof path != 'string' ? path : undefined);
+    const parsedOptions = options || (typeof path !== 'string' ? path : undefined);
     addFirebaseFunction(getSpecificMethod('GET', target, key, parsedPath, parsedOptions));
   };
 }
@@ -96,7 +96,7 @@ export function GET(path?: string | FirebaseOptions, options?: FirebaseOptions) 
 export function POST(path?: string | FirebaseOptions, options?: FirebaseOptions) {
   return (target: any, key: string) => {
     const parsedPath = typeof path === 'string' ? path : undefined;
-    const parsedOptions = options || (typeof path != 'string' ? path : undefined);
+    const parsedOptions = options || (typeof path !== 'string' ? path : undefined);
     addFirebaseFunction(getSpecificMethod('POST', target, key, parsedPath, parsedOptions));
   };
 }
@@ -109,7 +109,7 @@ export function POST(path?: string | FirebaseOptions, options?: FirebaseOptions)
 export function PUT(path?: string | FirebaseOptions, options?: FirebaseOptions) {
   return (target: any, key: string) => {
     const parsedPath = typeof path === 'string' ? path : undefined;
-    const parsedOptions = options || (typeof path != 'string' ? path : undefined);
+    const parsedOptions = options || (typeof path !== 'string' ? path : undefined);
     addFirebaseFunction(getSpecificMethod('PUT', target, key, parsedPath, parsedOptions));
   };
 }
@@ -122,7 +122,7 @@ export function PUT(path?: string | FirebaseOptions, options?: FirebaseOptions) 
 export function PATCH(path?: string | FirebaseOptions, options?: FirebaseOptions) {
   return (target: any, key: string) => {
     const parsedPath = typeof path === 'string' ? path : undefined;
-    const parsedOptions = options || (typeof path != 'string' ? path : undefined);
+    const parsedOptions = options || (typeof path !== 'string' ? path : undefined);
     addFirebaseFunction(getSpecificMethod('PATCH', target, key, parsedPath, parsedOptions));
   };
 }
@@ -135,7 +135,7 @@ export function PATCH(path?: string | FirebaseOptions, options?: FirebaseOptions
 export function DELETE(path?: string | FirebaseOptions, options?: FirebaseOptions) {
   return (target: any, key: string) => {
     const parsedPath = typeof path === 'string' ? path : undefined;
-    const parsedOptions = options || (typeof path != 'string' ? path : undefined);
+    const parsedOptions = options || (typeof path !== 'string' ? path : undefined);
     addFirebaseFunction(getSpecificMethod('DELETE', target, key, parsedPath, parsedOptions));
   };
 }
