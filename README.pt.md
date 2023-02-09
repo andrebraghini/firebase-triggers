@@ -460,3 +460,39 @@ class TodoCtrl {
     }
 }
 ```
+
+
+## Opções de tempo de execução
+
+O Cloud Functions para Firebase permite selecionar opções de tempo de execução, como a versão do tempo de execução do Node.js e o tempo limite por função, alocação de memória e instâncias de função mínima/máxima.
+
+Como prática recomendada, essas opções (exceto para a versão Node.js) devem ser definidas em um objeto de configuração dentro do código da função. Este objeto RuntimeOptions é a fonte da verdade para as opções de tempo de execução da sua função e substituirá as opções definidas por meio de qualquer outro método (como por meio do console do Google Cloud ou gcloud CLI).
+
+Para definir configurações de tempo de execução em uma Cloud Function você pode informar opcionalmente um parâmetro adicional no decorator desejado com as configurações que quer definir, incluindo a regiões de implantação da função. Veja alguns exemplos abaixo:
+
+```ts
+import 'reflect-metadata';
+import { getFirebaseFunctionListToExport, onFirestoreCreate, onRequest } from 'firebase-triggers';
+
+class MyCtrl {
+    @onFirestoreCreate('todo/{id}', {
+        memory: '128MB',
+        timeoutSeconds: 60,
+        minInstances: 2,
+        maxInstances: 4,
+        vpcConnectorEgressSettings: 'ALL_TRAFFIC',
+        ingressSettings: 'ALLOW_ALL',
+        invoker: 'public',
+        region: 'us-east1'
+    })
+    docWrite(snapshot, context) {
+        const data = snapshot.data();
+        console.log(`New task added: ${data.title} at ${data.time}`);
+    }
+
+    @onRequest('hello-world', { region: ['us-east1', 'us-east2'] })
+    httpRequest(request, response) {
+        response.send('Hello World!');
+    }
+}
+```

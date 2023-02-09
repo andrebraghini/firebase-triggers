@@ -8,6 +8,11 @@ class DemoCtrl {
   docDelete() {
     return 'docDelete';
   }
+
+  @onFirestoreDelete('demo_collection/{id}', { memory: '256MB' })
+  docDeleteWithOptions() {
+    return 'docDeleteWithOptions';
+  }
 }
 
 describe('@onFirestoreDelete', () => {
@@ -24,8 +29,28 @@ describe('@onFirestoreDelete', () => {
       expect(func.methodName).toBe('docDelete');
       expect(func.trigger).toBe(FirebaseTriggerType.FIRESTORE_DELETE);
       expect(func.key).toBe('demo_collection/{id}');
+      expect(func.options).toBeUndefined();
     } else {
       fail('Method docDelete() not found');
+    }
+  });
+
+  it('should have docDeleteWithOptions() method on the Firebase Function List on memory', () => {
+    // Setup
+    const func = getFirebaseFunctionList().find((item) => item.methodName === 'docDeleteWithOptions');
+    if (func) {
+      // Execute
+      const result = func.method();
+
+      // Validate
+      expect(result).toBe('docDeleteWithOptions');
+      expect(func.className).toBe('DemoCtrl');
+      expect(func.methodName).toBe('docDeleteWithOptions');
+      expect(func.trigger).toBe(FirebaseTriggerType.FIRESTORE_DELETE);
+      expect(func.key).toBe('demo_collection/{id}');
+      expect(func.options?.memory).toBe('256MB');
+    } else {
+      fail('Method docDeleteWithOptions() not found');
     }
   });
 });

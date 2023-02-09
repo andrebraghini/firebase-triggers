@@ -8,6 +8,11 @@ class DemoCtrl {
   docCreate() {
     return 'docCreate';
   }
+
+  @onFirestoreCreate('demo_collection/{id}', { memory: '256MB' })
+  docCreateWithOptions() {
+    return 'docCreateWithOptions';
+  }
 }
 
 describe('@onFirestoreCreate', () => {
@@ -24,8 +29,28 @@ describe('@onFirestoreCreate', () => {
       expect(func.methodName).toBe('docCreate');
       expect(func.trigger).toBe(FirebaseTriggerType.FIRESTORE_CREATE);
       expect(func.key).toBe('demo_collection/{id}');
+      expect(func.options).toBeUndefined();
     } else {
       fail('method docCreate() not found');
+    }
+  });
+
+  it('should have docCreateWithOptions() method on the Firebase Function List on memory', () => {
+    // Setup
+    const func = getFirebaseFunctionList().find((item) => item.methodName === 'docCreateWithOptions');
+    if (func) {
+      // Execute
+      const result = func.method();
+
+      // Validate
+      expect(result).toBe('docCreateWithOptions');
+      expect(func.className).toBe('DemoCtrl');
+      expect(func.methodName).toBe('docCreateWithOptions');
+      expect(func.trigger).toBe(FirebaseTriggerType.FIRESTORE_CREATE);
+      expect(func.key).toBe('demo_collection/{id}');
+      expect(func.options?.memory).toBe('256MB');
+    } else {
+      fail('method docCreateWithOptions() not found');
     }
   });
 });

@@ -1,14 +1,15 @@
 import { getClassMethod, getClassName, addFirebaseFunction } from '../internal-methods';
-import { FirebaseFunction, FirebaseTriggerType } from '../types';
+import { FirebaseFunction, FirebaseOptions, FirebaseTriggerType } from '../types';
 
 function getStorageFunction(trigger: FirebaseTriggerType) {
-  return (bucketName?: string) => (target: any, key: string) => {
+  return (bucketName?: string, options?: FirebaseOptions) => (target: any, key: string) => {
     const firebaseFunction: FirebaseFunction = {
       className: getClassName(target),
       methodName: key,
       method: getClassMethod(target, key),
       trigger,
       key: bucketName,
+      options,
     };
     addFirebaseFunction(firebaseFunction);
   };
