@@ -9,9 +9,19 @@ class DemoCtrl {
     return 'archiveFile';
   }
 
+  @onStorageArchive('bucketName', { memory: '256MB' })
+  archiveFileWithOptions() {
+    return 'archiveFileWithOptions';
+  }
+
   @onStorageDelete('bucketName')
   deleteFile() {
     return 'deleteFile';
+  }
+
+  @onStorageDelete('bucketName', { memory: '256MB' })
+  deleteFileWithOptions() {
+    return 'deleteFileWithOptions';
   }
 
   @onStorageFinalize('bucketName')
@@ -19,9 +29,19 @@ class DemoCtrl {
     return 'finalizeFile';
   }
 
+  @onStorageFinalize('bucketName', { memory: '256MB' })
+  finalizeFileWithOptions() {
+    return 'finalizeFileWithOptions';
+  }
+
   @onStorageMetadataUpdate('bucketName')
   updateMetadata() {
     return 'updateMetadata';
+  }
+
+  @onStorageMetadataUpdate('bucketName', { memory: '256MB' })
+  updateMetadataWithOptions() {
+    return 'updateMetadataWithOptions';
   }
 }
 

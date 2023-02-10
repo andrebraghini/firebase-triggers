@@ -1,4 +1,7 @@
+import * as functions from 'firebase-functions';
 import { FirebaseTriggerType } from './firebase-trigger-type';
+
+export type FirebaseOptions = functions.RuntimeOptions & { region?: string | string[] };
 
 /**
  * Firebase function data
@@ -23,6 +26,9 @@ export interface FirebaseFunction {
    * If it's a Firestore Event, the key is the document path.
    */
   key?: string | any;
+
+  /** Firebase runtime options */
+  options?: FirebaseOptions;
 }
 
 export interface FirebaseFunctionList {

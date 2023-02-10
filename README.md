@@ -458,3 +458,39 @@ class TodoCtrl {
     }
 }
 ```
+
+
+## Runtime Options
+
+Cloud Functions for Firebase lets you select runtime options such as the Node.js runtime version and per-function timeout, memory allocation, and minimum/maximum function instances.
+
+As a best practice, these options (except for Node.js version) should be set on a configuration object inside the function code. This RuntimeOptions object is the source of truth for your function's runtime options, and will override options set via any other method (such as via the Google Cloud console or gcloud CLI).
+
+To define runtime options in a Cloud Function, you can optionally provide an additional parameter in the desired decorator with the settings you want to define, including the function's deployment regions. See some examples below:
+
+```ts
+import 'reflect-metadata';
+import { getFirebaseFunctionListToExport, onFirestoreCreate, onRequest } from 'firebase-triggers';
+
+class MyCtrl {
+    @onFirestoreCreate('todo/{id}', {
+        memory: '128MB',
+        timeoutSeconds: 60,
+        minInstances: 2,
+        maxInstances: 4,
+        vpcConnectorEgressSettings: 'ALL_TRAFFIC',
+        ingressSettings: 'ALLOW_ALL',
+        invoker: 'public',
+        region: 'us-east1'
+    })
+    docWrite(snapshot, context) {
+        const data = snapshot.data();
+        console.log(`New task added: ${data.title} at ${data.time}`);
+    }
+
+    @onRequest('hello-world', { region: ['us-east1', 'us-east2'] })
+    httpRequest(request, response) {
+        response.send('Hello World!');
+    }
+}
+```

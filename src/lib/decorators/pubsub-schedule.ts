@@ -1,11 +1,11 @@
 import { getClassMethod, getClassName, addFirebaseFunction } from '../internal-methods';
-import { FirebaseFunction, FirebaseTriggerType } from '../types';
+import { FirebaseFunction, FirebaseOptions, FirebaseTriggerType } from '../types';
 
 /**
  * Decorator that adds the method to the list of Cloud Functions triggered when a publication is made via PubSub triggered via Cron
  * @param schedule Cron time interval (ex: '5 11 * * *' ou 'every 5 minutes')
  */
-export function onPubSubSchedule(schedule: string | { interval: string; timezone?: string }) {
+export function onPubSubSchedule(schedule: string | { interval: string; timezone?: string }, options?: FirebaseOptions) {
   return (target: any, key: string) => {
     const firebaseFunction: FirebaseFunction = {
       className: getClassName(target),
@@ -13,6 +13,7 @@ export function onPubSubSchedule(schedule: string | { interval: string; timezone
       method: getClassMethod(target, key),
       trigger: FirebaseTriggerType.PUBSUB_SCHEDULE,
       key: schedule,
+      options,
     };
     addFirebaseFunction(firebaseFunction);
   };
