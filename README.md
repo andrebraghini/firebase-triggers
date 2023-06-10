@@ -110,7 +110,7 @@ Add the `@onFirebaseUserCreate()` decorator to a method to be executed whenever 
 
 ```ts
 import { onFirebaseUserCreate } from 'firebase-triggers';
-import { UserRecord } from 'firebase-functions/lib/providers/auth';
+import { UserRecord } from 'firebase-functions/auth';
 import { EventContext } from 'firebase-functions';
 
 class UserCtrl {
@@ -128,7 +128,7 @@ Add the `@onFirebaseUserDelete()` decorator to a method to be executed whenever 
 
 ```ts
 import { onFirebaseUserDelete } from 'firebase-triggers';
-import { UserRecord } from 'firebase-functions/lib/providers/auth';
+import { UserRecord } from 'firebase-functions/auth';
 import { EventContext } from 'firebase-functions';
 
 class UserCtrl {
@@ -146,7 +146,7 @@ Add the `@onFirestoreCreate()` decorator to a method to be executed whenever a n
 
 ```ts
 import { onFirestoreCreate } from 'firebase-triggers';
-import { QueryDocumentSnapshot } from 'firebase-functions/lib/providers/firestore';
+import { QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
 import { EventContext } from 'firebase-functions';
 
 class TodoCtrl {
@@ -170,7 +170,7 @@ Add the `@onFirestoreUpdate()` decorator to a method to be executed whenever an 
 
 ```ts
 import { onFirestoreUpdate } from 'firebase-triggers';
-import { QueryDocumentSnapshot } from 'firebase-functions/lib/providers/firestore';
+import { QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
 import { Change, EventContext } from 'firebase-functions';
 
 class TodoCtrl {
@@ -196,7 +196,7 @@ Add the `@onFirestoreDelete()` decorator to a method to be executed whenever a d
 
 ```ts
 import { onFirestoreDelete } from 'firebase-triggers';
-import { QueryDocumentSnapshot } from 'firebase-functions/lib/providers/firestore';
+import { QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
 import { EventContext } from 'firebase-functions';
 
 class TodoCtrl {
@@ -219,7 +219,7 @@ Add the `onFirestoreWrite()`decorator to a method to be executed whenever a docu
 
 ```ts
 import { onFirestoreWrite } from 'firebase-triggers';
-import { QueryDocumentSnapshot } from 'firebase-functions/lib/providers/firestore';
+import { QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
 import { Change, EventContext } from 'firebase-functions';
 
 class TodoCtrl {
@@ -258,12 +258,12 @@ Add the `@onPubSubPublish()` decorator to a method to be executed whenever a pub
 
 ```ts
 import { onPubSubPublish } from 'firebase-triggers';
-import { Message } from 'firebase-functions/lib/providers/pubsub';
+import { Message } from 'firebase-functions/v2/pubsub';
 import { EventContext } from 'firebase-functions';
 
 class SampleCtrl {
     @onPubSubPublish('my-topic')
-    doSomething(message: Message, context: EventContext) {
+    doSomething(message: Message<any>, context: EventContext) {
         const publishedData = message.json;
         console.log('Data published via PubSub on my-topic:', publishedData);
     }
@@ -434,7 +434,7 @@ See [Cloud Storage Events](https://firebase.google.com/docs/functions/gcp-storag
 ```ts
 import 'reflect-metadata';
 import { EventContext } from 'firebase-functions';
-import { ObjectMetadata } from 'firebase-functions/lib/providers/storage';
+import { ObjectMetadata } from 'firebase-functions/v1/storage';
 
 class TodoCtrl {
     @onStorageArchive('bucketName')
