@@ -1,4 +1,6 @@
-import * as functions from 'firebase-functions';
+import { runWith } from 'firebase-functions';
+import { https as httpsV1 } from 'firebase-functions/v1';
+import { https as httpsV2 } from 'firebase-functions/v2';
 import { existsSync } from 'fs';
 import { resolve } from 'path';
 import { requestErrorHandler } from './handlers';
@@ -16,7 +18,7 @@ function getFunctionBuilder(options: FirebaseOptions = {}) {
   const parsedOptions = { ...options };
   delete parsedOptions.region;
 
-  let result = functions.runWith(parsedOptions);
+  let result = runWith(parsedOptions);
 
   if (options.region) {
     const regions = typeof options.region === 'string' ? [options.region] : options.region;
@@ -114,7 +116,9 @@ function getHTTPMethodHandler(
 /**
  * Returns a list of methods linked to triggers to export at application startup
  */
-export function getFirebaseFunctionListToExport(): FirebaseFunctionList {
+export function getFirebaseFunctionListToExport(
+  options?: { cloudFunctionGeneration?: number }
+): FirebaseFunctionList {
   const result: FirebaseFunctionList = {};
   const httpRequestFunctions: {
     [fullMethodName: string]: {
@@ -136,8 +140,8 @@ export function getFirebaseFunctionListToExport(): FirebaseFunctionList {
         const methods = !func.key
           ? ['DEFAULT']
           : Array.isArray(func.key.methods)
-          ? func.key.methods
-          : [func.key.methods || 'DEFAULT'];
+            ? func.key.methods
+            : [func.key.methods || 'DEFAULT'];
         if (!httpRequestFunctions[fullMethodName]) {
           httpRequestFunctions[fullMethodName] = {};
         }
@@ -166,14 +170,15 @@ export function getFirebaseFunctionListToExport(): FirebaseFunctionList {
     const groupName = name.length > 1 ? name[0] : undefined;
     const cloudFunctionName = name.length > 1 ? name[1] : name[0];
     const methodHandler = getHTTPMethodHandler(fullMethodName, httpRequestFunctions[fullMethodName]);
+    const https = options?.cloudFunctionGeneration === 2 ? httpsV2 : httpsV1;
 
     if (groupName) {
       if (!result[groupName]) {
         result[groupName] = {};
       }
-      result[groupName][cloudFunctionName] = functions.https.onRequest(methodHandler as any);
+      result[groupName][cloudFunctionName] = https.onRequest(methodHandler as any);
     } else {
-      result[cloudFunctionName] = functions.https.onRequest(methodHandler as any);
+      result[cloudFunctionName] = https.onRequest(methodHandler as any);
     }
   });
 

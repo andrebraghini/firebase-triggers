@@ -55,6 +55,13 @@ Antes de fazer o _deploy_ para o _Firebase Functions_ você precisa exportar os 
 
 O método `getFirebaseFunctionListToExport()` retorna um objeto com a lista de métodos encontrados na aplicação.
 
+Para usar a segunda geração de cloud functions por padrão, passe parâmetro cloudFunctionGeneration como a seguir: 
+```ts
+getFirebaseFunctionListToExport({
+    cloudFunctionGeneration: 2
+})
+```
+
 Itere o objeto exportando cada método individualmente com o nome da propriedade como no exemplo abaixo:
 
 ```ts

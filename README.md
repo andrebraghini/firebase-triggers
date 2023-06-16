@@ -55,6 +55,13 @@ Before deploying to Firebase Functions you need to export the methods at the ent
 
 The `getFirebaseFunctionListToExport()` method returns an object with the list of methods found in the application.
 
+To use cloud functions of the second generation as default, pass the cloudFunctionGeneration parameter as follows: 
+```ts
+getFirebaseFunctionListToExport({
+    cloudFunctionGeneration: 2
+})
+```
+
 Iterate the object by exporting each method individually with the property name as in the example below:
 
 ```ts
