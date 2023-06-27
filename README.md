@@ -58,7 +58,7 @@ The `getFirebaseFunctionListToExport()` method returns an object with the list o
 To use cloud functions of the second generation as default, pass the cloudFunctionGeneration parameter as follows: 
 ```ts
 getFirebaseFunctionListToExport({
-    cloudFunctionGeneration: 2
+    generation: 2
 })
 ```
 

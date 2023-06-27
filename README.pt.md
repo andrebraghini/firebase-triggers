@@ -58,7 +58,7 @@ O método `getFirebaseFunctionListToExport()` retorna um objeto com a lista de m
 Para usar a segunda geração de cloud functions por padrão, passe parâmetro cloudFunctionGeneration como a seguir: 
 ```ts
 getFirebaseFunctionListToExport({
-    cloudFunctionGeneration: 2
+    generation: 2
 })
 ```
 

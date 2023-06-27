@@ -117,7 +117,7 @@ function getHTTPMethodHandler(
  * Returns a list of methods linked to triggers to export at application startup
  */
 export function getFirebaseFunctionListToExport(
-  options?: { cloudFunctionGeneration?: number }
+  options?: { generation?: number }
 ): FirebaseFunctionList {
   const result: FirebaseFunctionList = {};
   const httpRequestFunctions: {
@@ -170,7 +170,7 @@ export function getFirebaseFunctionListToExport(
     const groupName = name.length > 1 ? name[0] : undefined;
     const cloudFunctionName = name.length > 1 ? name[1] : name[0];
     const methodHandler = getHTTPMethodHandler(fullMethodName, httpRequestFunctions[fullMethodName]);
-    const https = options?.cloudFunctionGeneration === 2 ? httpsV2 : httpsV1;
+    const https = options?.generation === 2 ? httpsV2 : httpsV1;
 
     if (groupName) {
       if (!result[groupName]) {
