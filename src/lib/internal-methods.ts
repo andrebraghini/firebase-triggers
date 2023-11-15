@@ -26,17 +26,31 @@ export function getClassName(target: any): string {
  * @param func Firebase function data
  */
 export function getGroupName(func: FirebaseFunction): string | undefined {
-  if (func.trigger === FirebaseTriggerType.HTTP_REQUEST && func.key) {
-    const path = typeof func.key === 'string' ? func.key : func.key.path;
+  const { trigger, key, className } = func;
+  if (trigger === FirebaseTriggerType.HTTP_REQUEST && key) {
+    const path = typeof key === 'string' ? key : key.path;
     if (path) {
       return;
     }
   }
 
-  const removeCtrl = func.className.slice(-4).toLowerCase() === 'ctrl';
-  const sliceEnd = removeCtrl ? -4 : func.className.length;
+  return className.charAt(0).toLowerCase() + className.slice(1, getSliceEnd(className));
+}
 
-  return func.className.charAt(0).toLowerCase() + func.className.slice(1, sliceEnd);
+/**
+ * Returns the position to slice the class name, ignoring some key words
+ * @param className Class name
+ */
+function getSliceEnd(className: string): number {
+  const suffixToRemove = ['ctrl', 'controller'];
+  
+  for (let i = 0; i < suffixToRemove.length; i++) {
+    const suffix = suffixToRemove[i];
+    if (className.toLowerCase().endsWith(suffix))
+      return -suffix.length;
+  }
+
+  return className.length;
 }
 
 /**
