@@ -53,4 +53,18 @@ describe('@onPubSubSchedule', () => {
       fail('Method scheduleIntervalWithOptions() not found');
     }
   });
+
+  it('should define metadata reflection', () => {
+    // Setup
+    const expectedMetadata = {
+      schedule: '* * * * *',
+      options: { memory: '256MB' }
+    };
+
+    // Execute
+    const result = Reflect.getMetadata('onPubSubSchedule', DemoCtrl.prototype, 'scheduleIntervalWithOptions');
+
+    // Validate
+    expect(result).toMatchObject(expectedMetadata);
+  });
 });

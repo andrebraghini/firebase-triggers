@@ -53,4 +53,18 @@ describe('@onFirestoreDelete', () => {
       fail('Method docDeleteWithOptions() not found');
     }
   });
+
+  it('should define metadata reflection', () => {
+    // Setup
+    const expectedMetadata = {
+      documentOrCollection: 'demo_collection/{id}',
+      options: { memory: '256MB' }
+    };
+
+    // Execute
+    const result = Reflect.getMetadata('onFirestoreDelete', DemoCtrl.prototype, 'docDeleteWithOptions');
+
+    // Validate
+    expect(result).toMatchObject(expectedMetadata);
+  });
 });

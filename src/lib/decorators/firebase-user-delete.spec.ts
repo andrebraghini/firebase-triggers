@@ -51,4 +51,15 @@ describe('@onFirebaseUserDelete', () => {
       fail('Method userDeleteWithOptions() not found');
     }
   });
+
+  it('should define metadata reflection', () => {
+    // Setup
+    const expectedMetadata = { options: { memory: '256MB' } };
+
+    // Execute
+    const result = Reflect.getMetadata('onFirebaseUserDelete', DemoCtrl.prototype, 'userDeleteWithOptions');
+
+    // Validate
+    expect(result).toMatchObject(expectedMetadata);
+  });
 });

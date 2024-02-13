@@ -15,5 +15,6 @@ export function onFirebaseUserCreate(options?: FirebaseOptions) {
       options,
     };
     addFirebaseFunction(firebaseFunction);
+    Reflect.defineMetadata('onFirebaseUserCreate', { options }, target, key);
   };
 }

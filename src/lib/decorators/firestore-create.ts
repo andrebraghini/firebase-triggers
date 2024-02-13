@@ -17,5 +17,6 @@ export function onFirestoreCreate(documentOrCollection: string, options?: Fireba
       options,
     };
     addFirebaseFunction(firebaseFunction);
+    Reflect.defineMetadata('onFirestoreCreate', { documentOrCollection, options }, target, key);
   };
 }

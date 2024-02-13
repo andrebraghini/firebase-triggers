@@ -53,4 +53,18 @@ describe('@onPubSubPublish', () => {
       fail('Method pubsubSubscribeWithOptions() not found');
     }
   });
+
+  it('should define metadata reflection', () => {
+    // Setup
+    const expectedMetadata = {
+      topic: 'the-topic',
+      options: { memory: '256MB' }
+    };
+
+    // Execute
+    const result = Reflect.getMetadata('onPubSubPublish', DemoCtrl.prototype, 'pubsubSubscribeWithOptions');
+
+    // Validate
+    expect(result).toMatchObject(expectedMetadata);
+  });
 });

@@ -53,4 +53,18 @@ describe('@onFirestoreCreate', () => {
       fail('method docCreateWithOptions() not found');
     }
   });
+
+  it('should define metadata reflection', () => {
+    // Setup
+    const expectedMetadata = {
+      documentOrCollection: 'demo_collection/{id}',
+      options: { memory: '256MB' }
+    };
+
+    // Execute
+    const result = Reflect.getMetadata('onFirestoreCreate', DemoCtrl.prototype, 'docCreateWithOptions');
+
+    // Validate
+    expect(result).toMatchObject(expectedMetadata);
+  });
 });

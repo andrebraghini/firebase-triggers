@@ -73,5 +73,38 @@ class DemoCtrl {
         fail(`Method ${test.methodName}() not found`);
       }
     });
+
+    it(`should have ${test.methodName}WithOptions() method on the Firebase Function List on memory`, () => {
+      // Setup
+      const methodName = `${test.methodName}WithOptions`;
+      const func = getFirebaseFunctionList().find((item) => item.methodName === methodName);
+      if (func) {
+        // Execute
+        const result = func.method();
+
+        // Validate
+        expect(result).toBe(methodName);
+        expect(func.className).toBe('DemoCtrl');
+        expect(func.methodName).toBe(methodName);
+        expect(func.trigger).toBe(test.trigger);
+        expect(func.key).toBe('bucketName');
+      } else {
+        fail(`Method ${methodName}WithOptions() not found`);
+      }
+    });
+
+    it('should define metadata reflection', () => {
+      // Setup
+      const expectedMetadata = {
+        bucketName: 'bucketName',
+        options: undefined
+      };
+  
+      // Execute
+      const result = Reflect.getMetadata(test.decorator, DemoCtrl.prototype, test.methodName);
+  
+      // Validate
+      expect(result).toMatchObject(expectedMetadata);
+    });
   });
 });

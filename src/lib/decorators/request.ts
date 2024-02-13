@@ -72,6 +72,10 @@ export function onRequest(opt?: RequestOptions & FirebaseOptions, runtimeOptions
       options,
     };
     addFirebaseFunction(firebaseFunction);
+
+    const path = typeof requestOptions === 'string' ? requestOptions : requestOptions?.path;
+    const methods = typeof requestOptions !== 'string' ? requestOptions?.methods : undefined;
+    Reflect.defineMetadata('onRequest', { path, methods, options }, target, key);
   };
 }
 
@@ -85,6 +89,7 @@ export function GET(path?: string | FirebaseOptions, options?: FirebaseOptions) 
     const parsedPath = typeof path === 'string' ? path : undefined;
     const parsedOptions = options || (typeof path !== 'string' ? path : undefined);
     addFirebaseFunction(getSpecificMethod('GET', target, key, parsedPath, parsedOptions));
+    Reflect.defineMetadata('GET', { path: parsedPath, options: parsedOptions }, target, key);
   };
 }
 
@@ -98,6 +103,7 @@ export function POST(path?: string | FirebaseOptions, options?: FirebaseOptions)
     const parsedPath = typeof path === 'string' ? path : undefined;
     const parsedOptions = options || (typeof path !== 'string' ? path : undefined);
     addFirebaseFunction(getSpecificMethod('POST', target, key, parsedPath, parsedOptions));
+    Reflect.defineMetadata('POST', { path: parsedPath, options: parsedOptions }, target, key);
   };
 }
 
@@ -111,6 +117,7 @@ export function PUT(path?: string | FirebaseOptions, options?: FirebaseOptions) 
     const parsedPath = typeof path === 'string' ? path : undefined;
     const parsedOptions = options || (typeof path !== 'string' ? path : undefined);
     addFirebaseFunction(getSpecificMethod('PUT', target, key, parsedPath, parsedOptions));
+    Reflect.defineMetadata('PUT', { path: parsedPath, options: parsedOptions }, target, key);
   };
 }
 
@@ -124,6 +131,7 @@ export function PATCH(path?: string | FirebaseOptions, options?: FirebaseOptions
     const parsedPath = typeof path === 'string' ? path : undefined;
     const parsedOptions = options || (typeof path !== 'string' ? path : undefined);
     addFirebaseFunction(getSpecificMethod('PATCH', target, key, parsedPath, parsedOptions));
+    Reflect.defineMetadata('PATCH', { path: parsedPath, options: parsedOptions }, target, key);
   };
 }
 
@@ -137,5 +145,6 @@ export function DELETE(path?: string | FirebaseOptions, options?: FirebaseOption
     const parsedPath = typeof path === 'string' ? path : undefined;
     const parsedOptions = options || (typeof path !== 'string' ? path : undefined);
     addFirebaseFunction(getSpecificMethod('DELETE', target, key, parsedPath, parsedOptions));
+    Reflect.defineMetadata('DELETE', { path: parsedPath, options: parsedOptions }, target, key);
   };
 }

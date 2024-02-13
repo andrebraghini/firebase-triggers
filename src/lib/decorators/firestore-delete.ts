@@ -17,5 +17,6 @@ export function onFirestoreDelete(documentOrCollection: string, options?: Fireba
       options,
     };
     addFirebaseFunction(firebaseFunction);
+    Reflect.defineMetadata('onFirestoreDelete', { documentOrCollection, options }, target, key);
   };
 }

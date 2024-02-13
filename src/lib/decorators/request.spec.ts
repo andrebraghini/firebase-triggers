@@ -151,6 +151,23 @@ describe('@onRequest', () => {
       fail('Method httpRequestWithOpt() not found');
     }
   });
+
+  it('should define metadata reflection', () => {
+    // Setup
+    const expectedMetadata = {
+      path: 'pathWithOpt',
+      methods: ['GET', 'POST'],
+      options: {
+        memory: '128MB'
+      }
+    };
+
+    // Execute
+    const result = Reflect.getMetadata('onRequest', DemoCtrl.prototype, 'httpRequestWithOpt');
+    console.log('👍', { result })
+    // Validate
+    expect(result).toMatchObject(expectedMetadata);
+  });
 });
 
 describe(`@DELETE`, () => {
@@ -188,6 +205,19 @@ describe(`@DELETE`, () => {
     } else {
       fail(`Method delWithOptions() not found`);
     }
+  });
+
+  it('should define metadata reflection', () => {
+    // Setup
+    const expectedMetadata = {
+      options: { maxInstances: 1 }
+    };
+
+    // Execute
+    const result = Reflect.getMetadata('DELETE', DemoCtrl.prototype, 'delWithOptions');
+
+    // Validate
+    expect(result).toMatchObject(expectedMetadata);
   });
 });
 
@@ -228,6 +258,20 @@ describe(`@DELETE`, () => {
       } else {
         fail(`Method ${functionName}() not found`);
       }
+    });
+
+    it('should define metadata reflection', () => {
+      // Setup
+      const functionName = `${method.toLowerCase()}WithOptions`;
+      const expectedMetadata = {
+        options: { minInstances: 2 }
+      };
+  
+      // Execute
+      const result = Reflect.getMetadata(method, DemoCtrl.prototype, functionName);
+  
+      // Validate
+      expect(result).toMatchObject(expectedMetadata);
     });
   });
 });

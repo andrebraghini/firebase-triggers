@@ -16,5 +16,6 @@ export function onPubSubPublish(topic: string, options?: FirebaseOptions) {
       options,
     };
     addFirebaseFunction(firebaseFunction);
+    Reflect.defineMetadata('onPubSubPublish', { topic, options }, target, key);
   };
 }
