@@ -52,4 +52,15 @@ describe('@onCall()', () => {
       fail('Method calledByTheApp() not found');
     }
   });
+
+  it('should define metadata reflection', () => {
+    // Setup
+    const expectedMetadata = { options: { memory: '256MB', region: 'us-east1' } };
+
+    // Execute
+    const result = Reflect.getMetadata('onCall', DemoCtrl.prototype, 'calledByTheAppWithOptions');
+
+    // Validate
+    expect(result).toMatchObject(expectedMetadata);
+  });
 });

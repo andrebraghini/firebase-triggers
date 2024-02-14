@@ -53,4 +53,18 @@ describe('@onFirestoreUpdate', () => {
       fail('Method docUpdateWithOptions() not found');
     }
   });
+
+  it('should define metadata reflection', () => {
+    // Setup
+    const expectedMetadata = {
+      documentOrCollection: 'demo_collection/{id}',
+      options: { memory: '256MB' }
+    };
+
+    // Execute
+    const result = Reflect.getMetadata('onFirestoreUpdate', DemoCtrl.prototype, 'docUpdateWithOptions');
+
+    // Validate
+    expect(result).toMatchObject(expectedMetadata);
+  });
 });

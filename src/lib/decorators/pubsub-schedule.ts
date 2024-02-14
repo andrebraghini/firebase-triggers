@@ -16,5 +16,6 @@ export function onPubSubSchedule(schedule: string | { interval: string; timezone
       options,
     };
     addFirebaseFunction(firebaseFunction);
+    Reflect.defineMetadata('onPubSubSchedule', { schedule, options }, target, key);
   };
 }

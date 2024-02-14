@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { getClassMethod, getClassName, addFirebaseFunction } from '../internal-methods';
 import { FirebaseFunction, FirebaseOptions, FirebaseTriggerType } from '../types';
 /**
@@ -13,5 +14,6 @@ export function onCall(options?: FirebaseOptions) {
       options,
     };
     addFirebaseFunction(firebaseFunction);
+    Reflect.defineMetadata('onCall', { options }, target, key);
   };
 }

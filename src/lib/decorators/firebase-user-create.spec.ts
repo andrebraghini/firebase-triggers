@@ -52,4 +52,15 @@ describe('@onFirebaseUserCreate()', () => {
       fail('Method userCreateWithOptions() not found');
     }
   });
+
+  it('should define metadata reflection', () => {
+    // Setup
+    const expectedMetadata = { options: { memory: '256MB', region: ['us-east1', 'us-east2'] } };
+
+    // Execute
+    const result = Reflect.getMetadata('onFirebaseUserCreate', DemoCtrl.prototype, 'userCreateWithOptions');
+
+    // Validate
+    expect(result).toMatchObject(expectedMetadata);
+  });
 });

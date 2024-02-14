@@ -15,5 +15,6 @@ export function onFirebaseUserDelete(options?: FirebaseOptions) {
       options,
     };
     addFirebaseFunction(firebaseFunction);
+    Reflect.defineMetadata('onFirebaseUserDelete', { options }, target, key);
   };
 }

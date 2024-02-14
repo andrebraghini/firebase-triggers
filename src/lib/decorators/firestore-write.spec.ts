@@ -53,4 +53,18 @@ describe('@onFirestoreWrite', () => {
       fail('Method docWriteWithOptions() not found');
     }
   });
+
+  it('should define metadata reflection', () => {
+    // Setup
+    const expectedMetadata = {
+      documentOrCollection: 'demo_collection/{id}',
+      options: { memory: '256MB' }
+    };
+
+    // Execute
+    const result = Reflect.getMetadata('onFirestoreWrite', DemoCtrl.prototype, 'docWriteWithOptions');
+
+    // Validate
+    expect(result).toMatchObject(expectedMetadata);
+  });
 });
