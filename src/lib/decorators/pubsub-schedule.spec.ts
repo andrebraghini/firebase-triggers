@@ -9,7 +9,7 @@ class DemoCtrl {
     return 'scheduleInterval';
   }
 
-  @onPubSubSchedule('* * * * *', { memory: '256MB' })
+  @onPubSubSchedule({ schedule: '* * * * *', memory: '256MiB' })
   scheduleIntervalWithOptions() {
     return 'scheduleIntervalWithOptions';
   }
@@ -29,7 +29,7 @@ describe('@onPubSubSchedule', () => {
       expect(func.methodName).toBe('scheduleInterval');
       expect(func.trigger).toBe(FirebaseTriggerType.PUBSUB_SCHEDULE);
       expect(func.key).toBe('* * * * *');
-      expect(func.options).toBeUndefined();
+      expect(func.options).toEqual({ schedule: '* * * * *' });
     } else {
       fail('Method scheduleInterval() not found');
     }
@@ -48,7 +48,7 @@ describe('@onPubSubSchedule', () => {
       expect(func.methodName).toBe('scheduleIntervalWithOptions');
       expect(func.trigger).toBe(FirebaseTriggerType.PUBSUB_SCHEDULE);
       expect(func.key).toBe('* * * * *');
-      expect(func.options?.memory).toBe('256MB');
+      expect(func.options).toEqual({ schedule: '* * * * *', memory: '256MiB' });
     } else {
       fail('Method scheduleIntervalWithOptions() not found');
     }
@@ -58,7 +58,7 @@ describe('@onPubSubSchedule', () => {
     // Setup
     const expectedMetadata = {
       schedule: '* * * * *',
-      options: { memory: '256MB' }
+      memory: '256MiB',
     };
 
     // Execute

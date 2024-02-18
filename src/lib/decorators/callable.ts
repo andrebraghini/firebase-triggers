@@ -1,10 +1,13 @@
 import 'reflect-metadata';
+import { CallableOptions } from 'firebase-functions/v2/https';
 import { getClassMethod, getClassName, addFirebaseFunction } from '../internal-methods';
-import { FirebaseFunction, FirebaseOptions, FirebaseTriggerType } from '../types';
+import { FirebaseFunction, FirebaseTriggerType } from '../types';
+
 /**
- * Decorator that adds the class method to the Cloud Functions list triggered as a callable function
+ * Decorator that adds the class method to the Cloud Functions list triggered as a callable 
+ * function.
  */
-export function onCall(options?: FirebaseOptions) {
+export function onCall(options: CallableOptions = {}) {
   return (target: any, key: string) => {
     const firebaseFunction: FirebaseFunction = {
       className: getClassName(target),
@@ -14,6 +17,6 @@ export function onCall(options?: FirebaseOptions) {
       options,
     };
     addFirebaseFunction(firebaseFunction);
-    Reflect.defineMetadata('onCall', { options }, target, key);
+    Reflect.defineMetadata('onCall', options, target, key);
   };
 }

@@ -1,14 +1,33 @@
-import * as functions from 'firebase-functions';
+import * as functionsV1 from 'firebase-functions/v1';
+import { ScheduleOptions, onSchedule } from 'firebase-functions/v2/scheduler';
+import { FirebaseFunction, FirebaseTriggerType, FirebaseFunctionList, FirebaseOptions } from './types';
+import { CallableOptions, HttpsOptions, onCall, onRequest } from 'firebase-functions/v2/https';
+import { BlockingOptions, beforeUserCreated } from 'firebase-functions/v2/identity';
+import {
+  DocumentOptions,
+  onDocumentCreated,
+  onDocumentDeleted,
+  onDocumentUpdated,
+  onDocumentWritten,
+} from 'firebase-functions/v2/firestore';
+import { PubSubOptions, onMessagePublished } from 'firebase-functions/v2/pubsub';
+import {
+  StorageOptions,
+  onObjectArchived,
+  onObjectDeleted,
+  onObjectFinalized,
+  onObjectMetadataUpdated,
+} from 'firebase-functions/v2/storage';
 import { existsSync } from 'fs';
 import { resolve } from 'path';
 import { requestErrorHandler } from './handlers';
 import { multipleRequestHandler } from './handlers/multiple-request-handler';
 import { requestSchemaValidatorHandler } from './handlers/request-schema-validator-handler';
 import { getFirebaseFunctionList, getGroupName } from './internal-methods';
-import { FirebaseFunction, FirebaseTriggerType, FirebaseFunctionList, FirebaseOptions } from './types';
 
 /**
- * Get Firebase Function Builder setting the Firebase Runtime Options
+ * Get Firebase Function Builder setting the Firebase Runtime Options.
+ * 
  * @param options Firebase runtime options
  * @returns Firebase Function Builder
  */
@@ -16,7 +35,7 @@ function getFunctionBuilder(options: FirebaseOptions = {}) {
   const parsedOptions = { ...options };
   delete parsedOptions.region;
 
-  let result = functions.runWith(parsedOptions);
+  let result = functionsV1.runWith(parsedOptions);
 
   if (options.region) {
     const regions = typeof options.region === 'string' ? [options.region] : options.region;
@@ -30,45 +49,20 @@ function getFunctionBuilder(options: FirebaseOptions = {}) {
 
 /** Methods used to register Firebase triggers */
 const triggerMethods = {
-  CALLABLE: (handler: any, _: any, options?: FirebaseOptions) => getFunctionBuilder(options).https.onCall(handler),
-  USER_CREATE: (handler: any, _: any, options?: FirebaseOptions) => getFunctionBuilder(options).auth.user().onCreate(handler),
-  USER_DELETE: (handler: any, _: any, options?: FirebaseOptions) => getFunctionBuilder(options).auth.user().onDelete(handler),
-  HTTP_REQUEST: (handler: any, _: any, options?: FirebaseOptions) => getFunctionBuilder(options).https.onRequest(handler),
-  FIRESTORE_CREATE: (handler: any, path: string, options?: FirebaseOptions) => getFunctionBuilder(options).firestore.document(path).onCreate(handler),
-  FIRESTORE_UPDATE: (handler: any, path: string, options?: FirebaseOptions) => getFunctionBuilder(options).firestore.document(path).onUpdate(handler),
-  FIRESTORE_DELETE: (handler: any, path: string, options?: FirebaseOptions) => getFunctionBuilder(options).firestore.document(path).onDelete(handler),
-  FIRESTORE_WRITE: (handler: any, path: string, options?: FirebaseOptions) => getFunctionBuilder(options).firestore.document(path).onWrite(handler),
-  PUBSUB_PUBLISH: (handler: any, topic: string, options?: FirebaseOptions) => getFunctionBuilder(options).pubsub.topic(topic).onPublish(handler),
-  PUBSUB_SCHEDULE: (handler: any, schedule: string | { interval: string; timezone?: string }, options?: FirebaseOptions) => {
-    const scheduleObj: { interval?: string; timezone?: string } = {};
-    if (typeof schedule === 'object') {
-      scheduleObj.interval = schedule.interval;
-      scheduleObj.timezone = schedule.timezone;
-    } else {
-      scheduleObj.interval = schedule;
-    }
-
-    if (scheduleObj.timezone) {
-      return getFunctionBuilder(options).pubsub.schedule(scheduleObj.interval).timeZone(scheduleObj.timezone).onRun(handler);
-    }
-    return getFunctionBuilder(options).pubsub.schedule(scheduleObj.interval).onRun(handler);
-  },
-  STORAGE_ARCHIVE: (handler: any, bucket?: string, options?: FirebaseOptions) => {
-    const obj = bucket ? getFunctionBuilder(options).storage.bucket(bucket).object() : getFunctionBuilder(options).storage.object();
-    return obj.onArchive(handler);
-  },
-  STORAGE_DELETE: (handler: any, bucket?: string, options?: FirebaseOptions) => {
-    const obj = bucket ? getFunctionBuilder(options).storage.bucket(bucket).object() : getFunctionBuilder(options).storage.object();
-    return obj.onDelete(handler);
-  },
-  STORAGE_FINALIZE: (handler: any, bucket?: string, options?: FirebaseOptions) => {
-    const obj = bucket ? getFunctionBuilder(options).storage.bucket(bucket).object() : getFunctionBuilder(options).storage.object();
-    return obj.onFinalize(handler);
-  },
-  STORAGE_METADATA_UPDATE: (handler: any, bucket?: string, options?: FirebaseOptions) => {
-    const obj = bucket ? getFunctionBuilder(options).storage.bucket(bucket).object() : getFunctionBuilder(options).storage.object();
-    return obj.onMetadataUpdate(handler);
-  },
+  CALLABLE: (handler: any, options: CallableOptions = {}) => onCall(options, handler),
+  USER_CREATE: (handler: any, options: BlockingOptions = {}) => beforeUserCreated(options, handler),
+  USER_DELETE: (handler: any, options?: FirebaseOptions) => getFunctionBuilder(options).auth.user().onDelete(handler),
+  HTTP_REQUEST: (handler: any, options: HttpsOptions = {}) => onRequest(options, handler),
+  FIRESTORE_CREATE: (handler: any, options: string | DocumentOptions<string>) => onDocumentCreated(options as any, handler),
+  FIRESTORE_UPDATE: (handler: any, options: string | DocumentOptions<string>) => onDocumentUpdated(options as any, handler),
+  FIRESTORE_DELETE: (handler: any, options: string | DocumentOptions<string>) => onDocumentDeleted(options as any, handler),
+  FIRESTORE_WRITE: (handler: any, options: string | DocumentOptions<string>) => onDocumentWritten(options as any, handler),
+  PUBSUB_PUBLISH: (handler: any, options: string | PubSubOptions) => onMessagePublished(options as any, handler),
+  PUBSUB_SCHEDULE: (handler: any, options: ScheduleOptions) => onSchedule(options, handler),
+  STORAGE_ARCHIVE: (handler: any, options: StorageOptions) => onObjectArchived(options, handler),
+  STORAGE_DELETE: (handler: any, options: StorageOptions) => onObjectDeleted(options, handler),
+  STORAGE_FINALIZE: (handler: any, options: StorageOptions) => onObjectFinalized(options, handler),
+  STORAGE_METADATA_UPDATE: (handler: any, options: StorageOptions) => onObjectMetadataUpdated(options, handler),
 };
 
 /**
@@ -90,12 +84,12 @@ function getCloudFunctionName(func: FirebaseFunction): string {
 
 function getHTTPMethodHandler(
   fullMethodName: string,
-  httpRequestFunctions: { [httpMethod: string]: Function },
+  httpRequestFunctions: { [httpMethod: string]: { handler: Function } },
 ): Function {
   const requestHandlerList: { [key: string]: Function } = {};
 
   Object.keys(httpRequestFunctions).forEach((httpMethod) => {
-    let specificMethod = httpRequestFunctions[httpMethod];
+    let specificMethod = httpRequestFunctions[httpMethod].handler;
 
     const schemaFileFileName = `${fullMethodName}${httpMethod === 'DEFAULT' ? '' : `_${httpMethod}`}.json`;
     const schemaFile = resolve(`schema/${schemaFileFileName}`);
@@ -118,7 +112,10 @@ export function getFirebaseFunctionListToExport(): FirebaseFunctionList {
   const result: FirebaseFunctionList = {};
   const httpRequestFunctions: {
     [fullMethodName: string]: {
-      [httpMethod: string]: Function;
+      [httpMethod: string]: {
+        handler: Function;
+        options: HttpsOptions;
+      }
     };
   } = {};
 
@@ -143,7 +140,10 @@ export function getFirebaseFunctionListToExport(): FirebaseFunctionList {
         }
 
         methods.forEach((httpMethod) => {
-          httpRequestFunctions[fullMethodName][httpMethod] = func.method;
+          httpRequestFunctions[fullMethodName][httpMethod] = {
+            handler: func.method,
+            options: func.options,
+          };
         });
 
         return;
@@ -153,9 +153,9 @@ export function getFirebaseFunctionListToExport(): FirebaseFunctionList {
         if (!result[groupName]) {
           result[groupName] = {};
         }
-        result[groupName][cloudFunctionName] = triggerMethod(func.method, func.key, func.options);
+        result[groupName][cloudFunctionName] = triggerMethod(func.method, func.options);
       } else {
-        result[cloudFunctionName] = triggerMethod(func.method, func.key, func.options);
+        result[cloudFunctionName] = triggerMethod(func.method, func.options);
       }
     }
   });
@@ -166,14 +166,17 @@ export function getFirebaseFunctionListToExport(): FirebaseFunctionList {
     const groupName = name.length > 1 ? name[0] : undefined;
     const cloudFunctionName = name.length > 1 ? name[1] : name[0];
     const methodHandler = getHTTPMethodHandler(fullMethodName, httpRequestFunctions[fullMethodName]);
+    const options = Object
+      .values(httpRequestFunctions[fullMethodName])
+      .find(item => !!item.options) || {};
 
     if (groupName) {
       if (!result[groupName]) {
         result[groupName] = {};
       }
-      result[groupName][cloudFunctionName] = functions.https.onRequest(methodHandler as any);
+      result[groupName][cloudFunctionName] = onRequest(options, methodHandler as any);
     } else {
-      result[cloudFunctionName] = functions.https.onRequest(methodHandler as any);
+      result[cloudFunctionName] = onRequest(options, methodHandler as any);
     }
   });
 

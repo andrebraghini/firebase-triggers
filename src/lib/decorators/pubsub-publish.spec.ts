@@ -9,7 +9,7 @@ class DemoCtrl {
     return 'pubsubSubscribe';
   }
 
-  @onPubSubPublish('the-topic', { memory: '256MB' })
+  @onPubSubPublish({ topic: 'the-topic', memory: '256MiB' })
   pubsubSubscribeWithOptions() {
     return 'pubsubSubscribeWithOptions';
   }
@@ -29,7 +29,7 @@ describe('@onPubSubPublish', () => {
       expect(func.methodName).toBe('pubsubSubscribe');
       expect(func.trigger).toBe(FirebaseTriggerType.PUBSUB_PUBLISH);
       expect(func.key).toBe('the-topic');
-      expect(func.options).toBeUndefined();
+      expect(func.options).toEqual({ topic: 'the-topic' });
     } else {
       fail('Method pubsubSubscribe() not found');
     }
@@ -48,7 +48,7 @@ describe('@onPubSubPublish', () => {
       expect(func.methodName).toBe('pubsubSubscribeWithOptions');
       expect(func.trigger).toBe(FirebaseTriggerType.PUBSUB_PUBLISH);
       expect(func.key).toBe('the-topic');
-      expect(func.options?.memory).toBe('256MB');
+      expect(func.options).toEqual({ topic: 'the-topic', memory: '256MiB' });
     } else {
       fail('Method pubsubSubscribeWithOptions() not found');
     }
@@ -58,7 +58,7 @@ describe('@onPubSubPublish', () => {
     // Setup
     const expectedMetadata = {
       topic: 'the-topic',
-      options: { memory: '256MB' }
+      memory: '256MiB',
     };
 
     // Execute

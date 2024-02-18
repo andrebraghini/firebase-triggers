@@ -163,22 +163,22 @@ class ThirdClassCtrl {
 
 // tslint:disable-next-line: max-classes-per-file
 class StorageCtrl {
-  @onStorageArchive('bucketName')
+  @onStorageArchive('bucket-name')
   archive() {
     return 'archive';
   }
 
-  @onStorageDelete('bucketName')
+  @onStorageDelete('bucket-name')
   del() {
     return 'del';
   }
 
-  @onStorageFinalize('bucketName')
+  @onStorageFinalize('bucket-name')
   finalize() {
     return 'finalize';
   }
 
-  @onStorageMetadataUpdate('bucketName')
+  @onStorageMetadataUpdate('bucket-name')
   updateMetadata() {
     return 'updateMetadata';
   }

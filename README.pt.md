@@ -439,22 +439,22 @@ import { EventContext } from 'firebase-functions';
 import { ObjectMetadata } from 'firebase-functions/v1/storage';
 
 class TodoCtrl {
-    @onStorageArchive('bucketName')
+    @onStorageArchive('bucket-name')
     archive(object: ObjectMetadata, context: EventContext) {
         console.log(`File ${object.name} archived`);
     }
     
-    @onStorageDelete('bucketName')
+    @onStorageDelete('bucket-name')
     del(object: ObjectMetadata, context: EventContext) {
         console.log(`File ${object.name} deleted`);
     }
 
-    @onStorageFinalize('bucketName')
+    @onStorageFinalize('bucket-name')
     uploaded(object: ObjectMetadata, context: EventContext) {
         console.log(`File ${object.name} uploaded`);
     }
 
-    @onStorageMetadataUpdate('bucketName')
+    @onStorageMetadataUpdate('bucket-name')
     updateMetadata(object: ObjectMetadata, context: EventContext) {
         console.log(`File ${object.name} updated`);
     }
@@ -475,22 +475,31 @@ import 'reflect-metadata';
 import { getFirebaseFunctionListToExport, onFirestoreCreate, onRequest } from 'firebase-triggers';
 
 class MyCtrl {
-    @onFirestoreCreate('todo/{id}', {
-        memory: '128MB',
+    @onFirestoreCreate({
+        document: 'todo/{id}',
+        database: 'my-database-name',
+        namespace: 'some-namespace',
+        retry: false,
+        region: 'us-east1',
+        omit: false,
+        memory: '128MiB',
         timeoutSeconds: 60,
         minInstances: 2,
         maxInstances: 4,
+        concurrency: 100,
+        cpu: 0.5,
         vpcConnectorEgressSettings: 'ALL_TRAFFIC',
         ingressSettings: 'ALLOW_ALL',
         invoker: 'public',
-        region: 'us-east1'
+        labels: { someKey: 'my-label-value'},
+        preserveExternalChanges: false,
     })
     docWrite(snapshot, context) {
         const data = snapshot.data();
         console.log(`New task added: ${data.title} at ${data.time}`);
     }
 
-    @onRequest('hello-world', { region: ['us-east1', 'us-east2'] })
+    @onRequest({ path: 'hello-world', region: 'us-east1' })
     httpRequest(request, response) {
         response.send('Hello World!');
     }

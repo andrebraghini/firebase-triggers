@@ -9,7 +9,7 @@ class DemoCtrl {
     return 'docWrite';
   }
 
-  @onFirestoreWrite('demo_collection/{id}', { memory: '256MB' })
+  @onFirestoreWrite({ document: 'demo_collection/{id}', memory: '256MiB' })
   docWriteWithOptions() {
     return 'docWriteWithOptions';
   }
@@ -29,7 +29,7 @@ describe('@onFirestoreWrite', () => {
       expect(func.methodName).toBe('docWrite');
       expect(func.trigger).toBe(FirebaseTriggerType.FIRESTORE_WRITE);
       expect(func.key).toBe('demo_collection/{id}');
-      expect(func.options).toBeUndefined();
+      expect(func.options).toEqual({ document: 'demo_collection/{id}' });
     } else {
       fail('Method docWrite() not found');
     }
@@ -48,7 +48,7 @@ describe('@onFirestoreWrite', () => {
       expect(func.methodName).toBe('docWriteWithOptions');
       expect(func.trigger).toBe(FirebaseTriggerType.FIRESTORE_WRITE);
       expect(func.key).toBe('demo_collection/{id}');
-      expect(func.options?.memory).toBe('256MB');
+      expect(func.options).toEqual({ document: 'demo_collection/{id}', memory: '256MiB' });
     } else {
       fail('Method docWriteWithOptions() not found');
     }
@@ -57,8 +57,8 @@ describe('@onFirestoreWrite', () => {
   it('should define metadata reflection', () => {
     // Setup
     const expectedMetadata = {
-      documentOrCollection: 'demo_collection/{id}',
-      options: { memory: '256MB' }
+      document: 'demo_collection/{id}',
+      memory: '256MiB',
     };
 
     // Execute

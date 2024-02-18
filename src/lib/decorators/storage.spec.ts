@@ -4,42 +4,42 @@ import { FirebaseTriggerType } from '../types';
 import { getFirebaseFunctionList } from '../internal-methods';
 
 class DemoCtrl {
-  @onStorageArchive('bucketName')
+  @onStorageArchive('bucket-name')
   archiveFile() {
     return 'archiveFile';
   }
 
-  @onStorageArchive('bucketName', { memory: '256MB' })
+  @onStorageArchive({ bucket: 'bucket-name', memory: '256MiB' })
   archiveFileWithOptions() {
     return 'archiveFileWithOptions';
   }
 
-  @onStorageDelete('bucketName')
+  @onStorageDelete('bucket-name')
   deleteFile() {
     return 'deleteFile';
   }
 
-  @onStorageDelete('bucketName', { memory: '256MB' })
+  @onStorageDelete({ bucket: 'bucket-name', memory: '256MiB' })
   deleteFileWithOptions() {
     return 'deleteFileWithOptions';
   }
 
-  @onStorageFinalize('bucketName')
+  @onStorageFinalize('bucket-name')
   finalizeFile() {
     return 'finalizeFile';
   }
 
-  @onStorageFinalize('bucketName', { memory: '256MB' })
+  @onStorageFinalize({ bucket: 'bucket-name', memory: '256MiB' })
   finalizeFileWithOptions() {
     return 'finalizeFileWithOptions';
   }
 
-  @onStorageMetadataUpdate('bucketName')
+  @onStorageMetadataUpdate('bucket-name')
   updateMetadata() {
     return 'updateMetadata';
   }
 
-  @onStorageMetadataUpdate('bucketName', { memory: '256MB' })
+  @onStorageMetadataUpdate({ bucket: 'bucket-name', memory: '256MiB' })
   updateMetadataWithOptions() {
     return 'updateMetadataWithOptions';
   }
@@ -68,7 +68,8 @@ class DemoCtrl {
         expect(func.className).toBe('DemoCtrl');
         expect(func.methodName).toBe(test.methodName);
         expect(func.trigger).toBe(test.trigger);
-        expect(func.key).toBe('bucketName');
+        expect(func.key).toBe('bucket-name');
+        expect(func.options).toEqual({ bucket: 'bucket-name' });
       } else {
         fail(`Method ${test.methodName}() not found`);
       }
@@ -87,7 +88,8 @@ class DemoCtrl {
         expect(func.className).toBe('DemoCtrl');
         expect(func.methodName).toBe(methodName);
         expect(func.trigger).toBe(test.trigger);
-        expect(func.key).toBe('bucketName');
+        expect(func.key).toBe('bucket-name');
+        expect(func.options).toEqual({ bucket: 'bucket-name', memory: '256MiB' });
       } else {
         fail(`Method ${methodName}WithOptions() not found`);
       }
@@ -96,8 +98,7 @@ class DemoCtrl {
     it('should define metadata reflection', () => {
       // Setup
       const expectedMetadata = {
-        bucketName: 'bucketName',
-        options: undefined
+        bucket: 'bucket-name'
       };
   
       // Execute

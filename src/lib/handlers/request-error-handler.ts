@@ -1,4 +1,4 @@
-import * as functions from 'firebase-functions';
+import { logger, Response } from 'firebase-functions';
 import { INTERNAL_ERROR, mergeError } from '../errors';
 
 /**
@@ -8,7 +8,7 @@ import { INTERNAL_ERROR, mergeError } from '../errors';
  */
 export function requestErrorHandler(requestHandler: Function): Function {
   return async function (...args: any[]) {
-    const res: functions.Response = args[1];
+    const res: Response = args[1];
     try {
       requestHandler.apply(this, args);
     } catch (error: any) {
@@ -17,7 +17,7 @@ export function requestErrorHandler(requestHandler: Function): Function {
         error: mergeError(INTERNAL_ERROR, { error }),
       });
 
-      console.error(error);
+      logger.error(error);
     }
   };
 }

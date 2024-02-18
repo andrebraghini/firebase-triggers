@@ -1,22 +1,27 @@
+import { DocumentOptions } from 'firebase-functions/v2/firestore';
 import { getClassMethod, getClassName, addFirebaseFunction } from '../internal-methods';
-import { FirebaseFunction, FirebaseOptions, FirebaseTriggerType } from '../types';
+import { FirebaseFunction, FirebaseTriggerType } from '../types';
 
 /**
- * Decorator that adds the method to the list of Cloud Functions triggered when creating new document in Firestore
- * @param documentOrCollection Firestore document or collection path
- * To use wildcard keys, enter the parameters between keys. e.g. 'user/{uid}/account/{accountId}'
+ * Decorator that adds the method to the list of Cloud Functions triggered when creating new
+ * document in Firestore.
+ * 
+ * @param document Firestore document/collection path or complete options.
+ *                 To use wildcard keys, enter the parameters between keys.
+ *                 e.g. 'user/{uid}/account/{accountId}'
  */
-export function onFirestoreCreate(documentOrCollection: string, options?: FirebaseOptions) {
+export function onFirestoreCreate(document: string | DocumentOptions) {
   return (target: any, key: string) => {
+    const options = typeof document === 'string' ? { document } : document;
     const firebaseFunction: FirebaseFunction = {
       className: getClassName(target),
       methodName: key,
       method: getClassMethod(target, key),
       trigger: FirebaseTriggerType.FIRESTORE_CREATE,
-      key: documentOrCollection,
+      key: options.document,
       options,
     };
     addFirebaseFunction(firebaseFunction);
-    Reflect.defineMetadata('onFirestoreCreate', { documentOrCollection, options }, target, key);
+    Reflect.defineMetadata('onFirestoreCreate', options, target, key);
   };
 }

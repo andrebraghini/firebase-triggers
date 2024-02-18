@@ -28,7 +28,7 @@ export interface FirebaseFunction {
   key?: string | any;
 
   /** Firebase runtime options */
-  options?: FirebaseOptions;
+  options?: any;
 }
 
 export interface FirebaseFunctionList {

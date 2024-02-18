@@ -14,12 +14,12 @@ class DemoCtrl {
     return 'httpRequestDiffName';
   }
 
-  @onRequest('newNamePath', { memory: '256MB' })
+  @onRequest({ path: 'newNamePath', memory: '256MiB' })
   httpRequestDiffNameWithOptions() {
     return 'httpRequestDiffNameWithOptions';
   }
 
-  @onRequest({ path: 'pathWithOpt', methods: ['GET', 'POST'], memory: '128MB' })
+  @onRequest({ path: 'pathWithOpt', methods: ['GET', 'POST'], memory: '128MiB' })
   httpRequestWithOpt() {
     return 'httpRequestWithOpt';
   }
@@ -88,7 +88,7 @@ describe('@onRequest', () => {
       expect(func.className).toBe('DemoCtrl');
       expect(func.methodName).toBe('httpRequest');
       expect(func.trigger).toBe(FirebaseTriggerType.HTTP_REQUEST);
-      expect(func.options).toBeUndefined();
+      expect(func.options).toEqual({});
     } else {
       fail('Method httpRequest() not found');
     }
@@ -106,8 +106,8 @@ describe('@onRequest', () => {
       expect(func.className).toBe('DemoCtrl');
       expect(func.methodName).toBe('httpRequestDiffName');
       expect(func.trigger).toBe(FirebaseTriggerType.HTTP_REQUEST);
-      expect(func.key).toBe('newNamePath');
-      expect(func.options).toBeUndefined();
+      expect(func.key).toEqual({ path: 'newNamePath' });
+      expect(func.options).toEqual({});
     } else {
       fail('method httpRequestDiffName() not found');
     }
@@ -125,8 +125,8 @@ describe('@onRequest', () => {
       expect(func.className).toBe('DemoCtrl');
       expect(func.methodName).toBe('httpRequestDiffNameWithOptions');
       expect(func.trigger).toBe(FirebaseTriggerType.HTTP_REQUEST);
-      expect(func.key).toBe('newNamePath');
-      expect(func.options?.memory).toBe('256MB');
+      expect(func.key).toEqual({ path: 'newNamePath' });
+      expect(func.options?.memory).toBe('256MiB');
     } else {
       fail('method httpRequestDiffNameWithOptions() not found');
     }
@@ -146,7 +146,7 @@ describe('@onRequest', () => {
       expect(func.trigger).toBe(FirebaseTriggerType.HTTP_REQUEST);
       expect(func.key.path).toBe('pathWithOpt');
       expect(func.key.methods).toMatchObject(['GET', 'POST']);
-      expect(func.options?.memory).toBe('128MB');
+      expect(func.options?.memory).toBe('128MiB');
     } else {
       fail('Method httpRequestWithOpt() not found');
     }
@@ -157,14 +157,12 @@ describe('@onRequest', () => {
     const expectedMetadata = {
       path: 'pathWithOpt',
       methods: ['GET', 'POST'],
-      options: {
-        memory: '128MB'
-      }
+      memory: '128MiB',
     };
 
     // Execute
     const result = Reflect.getMetadata('onRequest', DemoCtrl.prototype, 'httpRequestWithOpt');
-    console.log('👍', { result })
+
     // Validate
     expect(result).toMatchObject(expectedMetadata);
   });
@@ -183,7 +181,7 @@ describe(`@DELETE`, () => {
       expect(func.className).toBe('DemoCtrl');
       expect(func.methodName).toBe('del');
       expect(func.trigger).toBe(FirebaseTriggerType.HTTP_REQUEST);
-      expect(func.options).toBeUndefined();
+      expect(func.options).toEqual({});
     } else {
       fail(`Method del() not found`);
     }
@@ -210,7 +208,7 @@ describe(`@DELETE`, () => {
   it('should define metadata reflection', () => {
     // Setup
     const expectedMetadata = {
-      options: { maxInstances: 1 }
+      maxInstances: 1
     };
 
     // Execute
@@ -235,7 +233,7 @@ describe(`@DELETE`, () => {
         expect(func.className).toBe('DemoCtrl');
         expect(func.methodName).toBe(method.toLowerCase());
         expect(func.trigger).toBe(FirebaseTriggerType.HTTP_REQUEST);
-        expect(func.options).toBeUndefined();
+        expect(func.options).toEqual({});
       } else {
         fail(`Method ${method.toLowerCase()}() not found`);
       }
@@ -264,7 +262,7 @@ describe(`@DELETE`, () => {
       // Setup
       const functionName = `${method.toLowerCase()}WithOptions`;
       const expectedMetadata = {
-        options: { minInstances: 2 }
+        minInstances: 2,
       };
   
       // Execute

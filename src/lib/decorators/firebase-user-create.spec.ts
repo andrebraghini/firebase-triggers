@@ -9,7 +9,7 @@ class DemoCtrl {
     return 'userCreate';
   }
 
-  @onFirebaseUserCreate({ memory: '256MB', region: ['us-east1', 'us-east2'] })
+  @onFirebaseUserCreate({ memory: '256MiB', region: 'us-east1' })
   userCreateWithOptions() {
     return 'userCreateWithOptions';
   }
@@ -28,7 +28,7 @@ describe('@onFirebaseUserCreate()', () => {
       expect(func.className).toBe('DemoCtrl');
       expect(func.methodName).toBe('userCreate');
       expect(func.trigger).toBe(FirebaseTriggerType.USER_CREATE);
-      expect(func.options).toBeUndefined();
+      expect(func.options).toEqual({});
     } else {
       fail('Method userCreate() not found');
     }
@@ -46,8 +46,8 @@ describe('@onFirebaseUserCreate()', () => {
       expect(func.className).toBe('DemoCtrl');
       expect(func.methodName).toBe('userCreateWithOptions');
       expect(func.trigger).toBe(FirebaseTriggerType.USER_CREATE);
-      expect(func.options?.memory).toBe('256MB');
-      expect(func.options?.region).toEqual(['us-east1', 'us-east2']);
+      expect(func.options?.memory).toBe('256MiB');
+      expect(func.options?.region).toEqual('us-east1');
     } else {
       fail('Method userCreateWithOptions() not found');
     }
@@ -55,7 +55,7 @@ describe('@onFirebaseUserCreate()', () => {
 
   it('should define metadata reflection', () => {
     // Setup
-    const expectedMetadata = { options: { memory: '256MB', region: ['us-east1', 'us-east2'] } };
+    const expectedMetadata = { memory: '256MiB', region: 'us-east1' };
 
     // Execute
     const result = Reflect.getMetadata('onFirebaseUserCreate', DemoCtrl.prototype, 'userCreateWithOptions');

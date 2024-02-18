@@ -1,18 +1,20 @@
+import { StorageOptions } from 'firebase-functions/v2/storage';
 import { getClassMethod, getClassName, addFirebaseFunction } from '../internal-methods';
-import { FirebaseFunction, FirebaseOptions, FirebaseTriggerType } from '../types';
+import { FirebaseFunction, FirebaseTriggerType } from '../types';
 
 function getStorageFunction(trigger: FirebaseTriggerType, metadataKey) {
-  return (bucketName?: string, options?: FirebaseOptions) => (target: any, key: string) => {
+  return (bucket: string | StorageOptions) => (target: any, key: string) => {
+    const options = typeof bucket === 'string' ? { bucket } : bucket; 
     const firebaseFunction: FirebaseFunction = {
       className: getClassName(target),
       methodName: key,
       method: getClassMethod(target, key),
       trigger,
-      key: bucketName,
+      key: options.bucket,
       options,
     };
     addFirebaseFunction(firebaseFunction);
-    Reflect.defineMetadata(metadataKey, { bucketName, options }, target, key);
+    Reflect.defineMetadata(metadataKey, options, target, key);
   };
 }
 

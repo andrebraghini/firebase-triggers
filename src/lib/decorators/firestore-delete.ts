@@ -1,22 +1,27 @@
+import { DocumentOptions } from 'firebase-functions/v2/firestore';
 import { getClassMethod, getClassName, addFirebaseFunction } from '../internal-methods';
-import { FirebaseFunction, FirebaseOptions, FirebaseTriggerType } from '../types';
+import { FirebaseFunction, FirebaseTriggerType } from '../types';
 
 /**
- * Decorator that adds the method to the list of Cloud Functions triggered when removing a document from the Firestore
- * @param documentOrCollection Firestore document or collection path
- * To use wildcard keys, enter the parameters between keys. e.g. 'user/{uid}/account/{accountId}'
+ * Decorator that adds the method to the list of Cloud Functions triggered when removing a document
+ * from the Firestore.
+ * 
+ * @param document Firestore document/collection path or complete options.
+ *                 To use wildcard keys, enter the parameters between keys.
+ *                 e.g. 'user/{uid}/account/{accountId}'
  */
-export function onFirestoreDelete(documentOrCollection: string, options?: FirebaseOptions) {
+export function onFirestoreDelete(document: string | DocumentOptions) {
+  const options = typeof document === 'string' ? { document } : document;
   return (target: any, key: string) => {
     const firebaseFunction: FirebaseFunction = {
       className: getClassName(target),
       methodName: key,
       method: getClassMethod(target, key),
       trigger: FirebaseTriggerType.FIRESTORE_DELETE,
-      key: documentOrCollection,
+      key: options.document,
       options,
     };
     addFirebaseFunction(firebaseFunction);
-    Reflect.defineMetadata('onFirestoreDelete', { documentOrCollection, options }, target, key);
+    Reflect.defineMetadata('onFirestoreDelete', options, target, key);
   };
 }

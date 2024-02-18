@@ -9,7 +9,7 @@ class DemoCtrl {
     return 'docCreate';
   }
 
-  @onFirestoreCreate('demo_collection/{id}', { memory: '256MB' })
+  @onFirestoreCreate({ document: 'demo_collection/{id}', memory: '256MiB' })
   docCreateWithOptions() {
     return 'docCreateWithOptions';
   }
@@ -29,7 +29,7 @@ describe('@onFirestoreCreate', () => {
       expect(func.methodName).toBe('docCreate');
       expect(func.trigger).toBe(FirebaseTriggerType.FIRESTORE_CREATE);
       expect(func.key).toBe('demo_collection/{id}');
-      expect(func.options).toBeUndefined();
+      expect(func.options).toEqual({ document: 'demo_collection/{id}' });
     } else {
       fail('method docCreate() not found');
     }
@@ -48,7 +48,8 @@ describe('@onFirestoreCreate', () => {
       expect(func.methodName).toBe('docCreateWithOptions');
       expect(func.trigger).toBe(FirebaseTriggerType.FIRESTORE_CREATE);
       expect(func.key).toBe('demo_collection/{id}');
-      expect(func.options?.memory).toBe('256MB');
+      expect(func.options?.memory).toBe('256MiB');
+      expect(func.options?.document).toBe('demo_collection/{id}');
     } else {
       fail('method docCreateWithOptions() not found');
     }
@@ -57,8 +58,8 @@ describe('@onFirestoreCreate', () => {
   it('should define metadata reflection', () => {
     // Setup
     const expectedMetadata = {
-      documentOrCollection: 'demo_collection/{id}',
-      options: { memory: '256MB' }
+      document: 'demo_collection/{id}',
+      memory: '256MiB',
     };
 
     // Execute

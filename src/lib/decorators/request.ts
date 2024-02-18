@@ -1,18 +1,24 @@
+import { HttpsOptions } from 'firebase-functions/v2/https';
 import { getClassMethod, getClassName, addFirebaseFunction } from '../internal-methods';
-import { FirebaseFunction, FirebaseOptions, FirebaseTriggerType } from '../types';
+import { FirebaseFunction, FirebaseTriggerType } from '../types';
 
 export type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | string;
-export type RequestOptions = string | { path?: string; methods?: HTTPMethod | HTTPMethod[] };
+export type RequestOptions = { path?: string; methods?: HTTPMethod | HTTPMethod[] };
 
 /**
- * Returns a FirebaseFunction based on a specific method
+ * Returns a FirebaseFunction based on a specific method.
+ * 
  * @param httpMethod HTTP method
  * @param target
  * @param key
  * @param path URL suffix also used as method name in GCP. (optional)
  *             If you do not enter the path, the method name will be used. (Recommended)
  */
-function getSpecificMethod(httpMethod: HTTPMethod, target: any, key: string, path?: string, options?: FirebaseOptions): FirebaseFunction {
+function getSpecificMethod(httpMethod: HTTPMethod, target: any, key: string, opt: HttpsOptions & { path?: string } = {}): FirebaseFunction {
+  const path = opt.path;
+  const options = { ...opt };
+  delete options.path;
+
   return {
     className: getClassName(target),
     methodName: key,
@@ -23,44 +29,42 @@ function getSpecificMethod(httpMethod: HTTPMethod, target: any, key: string, pat
   };
 }
 
-function extractRequestOptions(options: RequestOptions & FirebaseOptions = {}): RequestOptions | undefined {
-  if (!options || typeof options === 'string') {
-    return options;
+function extractRequestOptions(options: string | RequestOptions & HttpsOptions = {}): RequestOptions {
+  if (options && typeof options === 'object') {
+    const { path, methods } = options;
+    return {
+      ...(path && { path }),
+      ...(methods && { methods }),
+    };
   }
-
-  const { path, methods } = options;
-  return {
-    ...(path && { path }),
-    ...(methods && { methods }),
-  };
+  
+  return { path: options };
 }
 
-function extractRuntimeOptions(options?: RequestOptions & FirebaseOptions): FirebaseOptions | undefined{
+function extractHttpsOptions(options?: string | RequestOptions & HttpsOptions): HttpsOptions {
   if (!options || typeof options === 'string') {
-    return undefined;
+    return {};
   }
 
   const result = { ...options };
   delete result.path;
   delete result.methods;
   
-  if (JSON.stringify(result) === '{}') {
-    return undefined;
-  }
-
   return result;
 }
 
 /**
- * Decorator that adds the method to the Cloud Functions list triggered when receiving an HTTP request
+ * Decorator that adds the method to the Cloud Functions list triggered when receiving an HTTP
+ * request.
+ * 
  * @param opt Optional function settings. If you enter a string it is used as a path.
- * @param opt.methods HTTP methods accepted in the request
+ * @param opt.methods HTTP methods accepted in the request.
  * @param opt.path URL suffix also used as method name in GCP. (optional)
  *                 If you do not enter the path, the method name will be used. (Recommended)
  */
-export function onRequest(opt?: RequestOptions & FirebaseOptions, runtimeOptions?: FirebaseOptions) {
+export function onRequest(opt: string | RequestOptions & HttpsOptions = {}) {
   const requestOptions = extractRequestOptions(opt);
-  const options = runtimeOptions || extractRuntimeOptions(opt);
+  const options = extractHttpsOptions(opt);
 
   return (target: any, key: string) => {
     const firebaseFunction: FirebaseFunction = {
@@ -73,51 +77,52 @@ export function onRequest(opt?: RequestOptions & FirebaseOptions, runtimeOptions
     };
     addFirebaseFunction(firebaseFunction);
 
-    const path = typeof requestOptions === 'string' ? requestOptions : requestOptions?.path;
-    const methods = typeof requestOptions !== 'string' ? requestOptions?.methods : undefined;
-    Reflect.defineMetadata('onRequest', { path, methods, options }, target, key);
+    Reflect.defineMetadata('onRequest', opt, target, key);
   };
 }
 
 /**
- * Decorator that adds the method to the Cloud Functions list triggered when receiving an GET HTTP request
+ * Decorator that adds the method to the Cloud Functions list triggered when receiving an GET HTTP
+ * request.
+ * 
  * @param path URL suffix also used as method name in GCP. (optional)
  *             If you do not enter the path, the method name will be used. (Recommended)
  */
-export function GET(path?: string | FirebaseOptions, options?: FirebaseOptions) {
+export function GET(path: string | HttpsOptions & { path?: string } = {}) {
   return (target: any, key: string) => {
-    const parsedPath = typeof path === 'string' ? path : undefined;
-    const parsedOptions = options || (typeof path !== 'string' ? path : undefined);
-    addFirebaseFunction(getSpecificMethod('GET', target, key, parsedPath, parsedOptions));
-    Reflect.defineMetadata('GET', { path: parsedPath, options: parsedOptions }, target, key);
+    const options = typeof path === 'string' ? { path } : path;
+    addFirebaseFunction(getSpecificMethod('GET', target, key, options));
+    Reflect.defineMetadata('GET', options, target, key);
   };
 }
 
 /**
- * Decorator that adds the method to the Cloud Functions list triggered when receiving an POST HTTP request
+ * Decorator that adds the method to the Cloud Functions list triggered when receiving an POST HTTP
+ * request.
+ * 
  * @param path URL suffix also used as method name in GCP. (optional)
  *             If you do not enter the path, the method name will be used. (Recommended)
  */
-export function POST(path?: string | FirebaseOptions, options?: FirebaseOptions) {
+export function POST(path: string | HttpsOptions & { path?: string } = {}) {
   return (target: any, key: string) => {
-    const parsedPath = typeof path === 'string' ? path : undefined;
-    const parsedOptions = options || (typeof path !== 'string' ? path : undefined);
-    addFirebaseFunction(getSpecificMethod('POST', target, key, parsedPath, parsedOptions));
-    Reflect.defineMetadata('POST', { path: parsedPath, options: parsedOptions }, target, key);
+    const options = typeof path === 'string' ? { path } : path;
+    addFirebaseFunction(getSpecificMethod('POST', target, key, options));
+    Reflect.defineMetadata('POST', options, target, key);
   };
 }
 
 /**
- * Decorator that adds the method to the Cloud Functions list triggered when receiving an PUT HTTP request
+ * Decorator that adds the method to the Cloud Functions list triggered when receiving an PUT HTTP
+ * request.
+ * 
  * @param path URL suffix also used as method name in GCP. (optional)
  *             If you do not enter the path, the method name will be used. (Recommended)
  */
-export function PUT(path?: string | FirebaseOptions, options?: FirebaseOptions) {
+export function PUT(path: string | HttpsOptions & { path?: string } = {}) {
   return (target: any, key: string) => {
-    const parsedPath = typeof path === 'string' ? path : undefined;
-    const parsedOptions = options || (typeof path !== 'string' ? path : undefined);
-    addFirebaseFunction(getSpecificMethod('PUT', target, key, parsedPath, parsedOptions));
-    Reflect.defineMetadata('PUT', { path: parsedPath, options: parsedOptions }, target, key);
+    const options = typeof path === 'string' ? { path } : path;
+    addFirebaseFunction(getSpecificMethod('PUT', target, key, options));
+    Reflect.defineMetadata('PUT', options, target, key);
   };
 }
 
@@ -126,12 +131,11 @@ export function PUT(path?: string | FirebaseOptions, options?: FirebaseOptions) 
  * @param path URL suffix also used as method name in GCP. (optional)
  *             If you do not enter the path, the method name will be used. (Recommended)
  */
-export function PATCH(path?: string | FirebaseOptions, options?: FirebaseOptions) {
+export function PATCH(path: string | HttpsOptions & { path?: string } = {}) {
   return (target: any, key: string) => {
-    const parsedPath = typeof path === 'string' ? path : undefined;
-    const parsedOptions = options || (typeof path !== 'string' ? path : undefined);
-    addFirebaseFunction(getSpecificMethod('PATCH', target, key, parsedPath, parsedOptions));
-    Reflect.defineMetadata('PATCH', { path: parsedPath, options: parsedOptions }, target, key);
+    const options = typeof path === 'string' ? { path } : path;
+    addFirebaseFunction(getSpecificMethod('PATCH', target, key, options));
+    Reflect.defineMetadata('PATCH', options, target, key);
   };
 }
 
@@ -140,11 +144,10 @@ export function PATCH(path?: string | FirebaseOptions, options?: FirebaseOptions
  * @param path URL suffix also used as method name in GCP. (optional)
  *             If you do not enter the path, the method name will be used. (Recommended)
  */
-export function DELETE(path?: string | FirebaseOptions, options?: FirebaseOptions) {
+export function DELETE(path: string | HttpsOptions & { path?: string } = {}) {
   return (target: any, key: string) => {
-    const parsedPath = typeof path === 'string' ? path : undefined;
-    const parsedOptions = options || (typeof path !== 'string' ? path : undefined);
-    addFirebaseFunction(getSpecificMethod('DELETE', target, key, parsedPath, parsedOptions));
-    Reflect.defineMetadata('DELETE', { path: parsedPath, options: parsedOptions }, target, key);
+    const options = typeof path === 'string' ? { path } : path;
+    addFirebaseFunction(getSpecificMethod('DELETE', target, key, options));
+    Reflect.defineMetadata('DELETE', options, target, key);
   };
 }

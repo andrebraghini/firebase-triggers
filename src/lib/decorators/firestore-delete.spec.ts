@@ -9,7 +9,7 @@ class DemoCtrl {
     return 'docDelete';
   }
 
-  @onFirestoreDelete('demo_collection/{id}', { memory: '256MB' })
+  @onFirestoreDelete({ document: 'demo_collection/{id}', memory: '256MiB' })
   docDeleteWithOptions() {
     return 'docDeleteWithOptions';
   }
@@ -29,7 +29,7 @@ describe('@onFirestoreDelete', () => {
       expect(func.methodName).toBe('docDelete');
       expect(func.trigger).toBe(FirebaseTriggerType.FIRESTORE_DELETE);
       expect(func.key).toBe('demo_collection/{id}');
-      expect(func.options).toBeUndefined();
+      expect(func.options).toEqual({ document: 'demo_collection/{id}' });
     } else {
       fail('Method docDelete() not found');
     }
@@ -48,7 +48,7 @@ describe('@onFirestoreDelete', () => {
       expect(func.methodName).toBe('docDeleteWithOptions');
       expect(func.trigger).toBe(FirebaseTriggerType.FIRESTORE_DELETE);
       expect(func.key).toBe('demo_collection/{id}');
-      expect(func.options?.memory).toBe('256MB');
+      expect(func.options).toEqual({ document: 'demo_collection/{id}', memory: '256MiB' });
     } else {
       fail('Method docDeleteWithOptions() not found');
     }
@@ -57,8 +57,8 @@ describe('@onFirestoreDelete', () => {
   it('should define metadata reflection', () => {
     // Setup
     const expectedMetadata = {
-      documentOrCollection: 'demo_collection/{id}',
-      options: { memory: '256MB' }
+      document: 'demo_collection/{id}',
+      memory: '256MiB',
     };
 
     // Execute

@@ -9,7 +9,7 @@ class DemoCtrl {
     return 'calledByTheApp';
   }
 
-  @onCall({ memory: '256MB', region: 'us-east1' })
+  @onCall({ memory: '256MiB', region: 'us-east1' })
   calledByTheAppWithOptions() {
     return 'calledByTheAppWithOptions';
   }
@@ -28,7 +28,7 @@ describe('@onCall()', () => {
       expect(func.className).toBe('DemoCtrl');
       expect(func.methodName).toBe('calledByTheApp');
       expect(func.trigger).toBe(FirebaseTriggerType.CALLABLE);
-      expect(func.options).toBeUndefined();
+      expect(func.options).toEqual({});
     } else {
       fail('Method calledByTheApp() not found');
     }
@@ -46,7 +46,7 @@ describe('@onCall()', () => {
       expect(func.className).toBe('DemoCtrl');
       expect(func.methodName).toBe('calledByTheAppWithOptions');
       expect(func.trigger).toBe(FirebaseTriggerType.CALLABLE);
-      expect(func.options?.memory).toBe('256MB');
+      expect(func.options?.memory).toBe('256MiB');
       expect(func.options?.region).toBe('us-east1');
     } else {
       fail('Method calledByTheApp() not found');
@@ -55,7 +55,7 @@ describe('@onCall()', () => {
 
   it('should define metadata reflection', () => {
     // Setup
-    const expectedMetadata = { options: { memory: '256MB', region: 'us-east1' } };
+    const expectedMetadata = { memory: '256MiB', region: 'us-east1' };
 
     // Execute
     const result = Reflect.getMetadata('onCall', DemoCtrl.prototype, 'calledByTheAppWithOptions');
