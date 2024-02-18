@@ -76,17 +76,22 @@ Supondo que você tenha uma classe `UserCtrl` com os métodos `update()` e `list
 
 ```ts
 import 'reflect-metadata';
+import { ParamsOf } from 'firebase-functions/lib/common/params';
+import { FirestoreEvent, QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
+import { Request } from 'firebase-functions/lib/common/providers/https';
+import { Response } from 'firebase-functions';
 import { getFirebaseFunctionListToExport, onFirestoreCreate, onRequest } from 'firebase-triggers';
 
 class MyCtrl {
     @onFirestoreCreate('todo/{id}')
-    docWrite(snapshot, context) {
-        const data = snapshot.data();
-        console.log(`New task added: ${data.title} at ${data.time}`);
+    docWrite(event: FirestoreEvent<QueryDocumentSnapshot, ParamsOf<string>>) {
+        const id = event.params.uid;
+        const data = event.data.data();
+        console.log(`New task ${id} added: ${data.title} at ${data.time}`);
     }
 
     @onRequest('hello-world')
-    httpRequest(request, response) {
+    httpRequest(request: Request, response: Response) {
         response.send('Hello World!');
     }
 }
@@ -112,13 +117,13 @@ Adicione o *decorator* `@onFirebaseUserCreate()` em um método para ser executad
 
 ```ts
 import { onFirebaseUserCreate } from 'firebase-triggers';
-import { UserRecord } from 'firebase-functions/v2/auth';
+import { AuthBlockingEvent } from 'firebase-functions/v2/identity';
 import { EventContext } from 'firebase-functions';
 
 class UserCtrl {
     @onFirebaseUserCreate()
-    onCreate(user: UserRecord, context: EventContext) {
-        console.log(`${user.displayName} joined us`);
+    onCreate(event: AuthBlockingEvent) {
+        console.log(`${event.data.displayName} joined us`);
     }
 }
 ```
@@ -147,15 +152,15 @@ class UserCtrl {
 Adicione o *decorator* `@onFirestoreCreate()` em um método para ser executado sempre que um novo documento for **criado** no Firestore, na *collection* definida parâmetro do *decorator*.
 
 ```ts
+import { FirestoreEvent, QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
+import { ParamsOf } from 'firebase-functions/lib/common/params';
 import { onFirestoreCreate } from 'firebase-triggers';
-import { QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
-import { EventContext } from 'firebase-functions';
 
 class TodoCtrl {
     @onFirestoreCreate('todo/{id}')
-    onCreate(snapshot: QueryDocumentSnapshot, context: EventContext) {
+    onCreate(event: FirestoreEvent<QueryDocumentSnapshot, ParamsOf<string>>) {
         // Pega um objeto representando o documento. ex: { title: 'Lavar a louça', time: '12:00' }
-        const newValue = snapshot.data();
+        const newValue = event.data.data();
         // acessar um determinado campo como faria com qualquer propriedade JS
         const title = newValue.title;
         const time = newValue.time;
@@ -171,17 +176,18 @@ class TodoCtrl {
 Adicione o *decorator* `@onFirestoreUpdate()` em um método para ser executado sempre que um documento existente for **alterado** no Firestore, na *collection* definida parâmetro no *decorator*.
 
 ```ts
+import { FirestoreEvent, QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
+import { Change } from 'firebase-functions';
+import { ParamsOf } from 'firebase-functions/lib/common/params';
 import { onFirestoreUpdate } from 'firebase-triggers';
-import { QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
-import { Change, EventContext } from 'firebase-functions';
 
 class TodoCtrl {
     @onFirestoreUpdate('todo/{id}')
-    onUpdate(change: Change<QueryDocumentSnapshot>, context: EventContext) {
+    onUpdate(event: FirestoreEvent<Change<QueryDocumentSnapshot>, ParamsOf<string>>) {
         // Pega um objeto representando o documento. ex: { title: 'Lavar a louça', time: '12:00' }
-        const newValue = change.after.data();
+        const newValue = event.data.after.data();
         // ...ou valor anterior a esta atualização(update)
-        const previousValue = change.before.data();
+        const previousValue = event.data.before.data();
         // acessar um determinado campo como faria com qualquer propriedade JS
         const newTitle = newValue.title;
         const oldTitle = previousValue.title;
@@ -197,15 +203,15 @@ class TodoCtrl {
 Adicione o *decorator* `@onFirestoreDelete()` em um método para ser executado sempre que um documento for **removido** do Firestore, na *collection* definida parâmetro no *decorator*.
 
 ```ts
+import { FirestoreEvent, QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
+import { ParamsOf } from 'firebase-functions/lib/common/params';
 import { onFirestoreDelete } from 'firebase-triggers';
-import { QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
-import { EventContext } from 'firebase-functions';
 
 class TodoCtrl {
     @onFirestoreDelete('todo/{id}')
-    onDelete(snapshot: QueryDocumentSnapshot, context: EventContext) {
+    onDelete(event: FirestoreEvent<QueryDocumentSnapshot, ParamsOf<string>>) {
         // Pega um objeto representando o documento. ex: { title: 'Lavar a louça', time: '12:00' }
-        const oldValue = snapshot.data();
+        const oldValue = event.data.data();
         // acessar um determinado campo como faria com qualquer propriedade JS
         const title = oldValue.title;
 
@@ -220,17 +226,18 @@ class TodoCtrl {
 Adicione o *decorator* `onFirestoreWrite()` em um método para ser executado sempre que um documento for **criado, alterado ou removido** do Firestore, na *collection* definida como parâmetro do *decorator*.
 
 ```ts
+import { FirestoreEvent, QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
+import { Change } from 'firebase-functions';
+import { ParamsOf } from 'firebase-functions/lib/common/params';
 import { onFirestoreWrite } from 'firebase-triggers';
-import { QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
-import { Change, EventContext } from 'firebase-functions';
 
 class TodoCtrl {
     @onFirestoreWrite('todo/{id}')
-    onWrite(change: Change<QueryDocumentSnapshot>, context: EventContext) {
+    onWrite(event: FirestoreEvent<Change<DocumentSnapshot>, ParamsOf<string>>) {
         // Pega um objeto com o valor do documento atual. Se o documento não existir, ele foi removido.
-        const newDocument = change.after.exists ? change.after.data() : null;
+        const newDocument = event.data.after.exists ? event.data.after.data() : null;
         // Pega um objeto com o valor do documento anterior (para uma atualização ou remoção (update ou delete)
-        const oldDocument = change.before.exists ? change.before.data() : null;
+        const oldDocument = event.data.before.exists ? event.data.before.data() : null;
 
         if (!newDocument) {
             const title = oldDocument.title;
@@ -259,13 +266,13 @@ class TodoCtrl {
 Adicione o *decorator* `@onPubSubPublish()` em um método para ser executado sempre que for feita uma publicação via PubSub no tópico definido como parâmetro no *decorator*.
 
 ```ts
+import { CloudEvent } from 'firebase-functions/lib/v2/core';
+import { MessagePublishedData } from 'firebase-functions/v2/pubsub';
 import { onPubSubPublish } from 'firebase-triggers';
-import { Message } from 'firebase-functions/v2/pubsub';
-import { EventContext } from 'firebase-functions';
 
 class SampleCtrl {
     @onPubSubPublish('my-topic')
-    doSomething(message: Message<any>, context: EventContext) {
+    doSomething(event: CloudEvent<MessagePublishedData<any>>) {
         const publishedData = message.json;
         console.log('Data published via PubSub on my-topic:', publishedData);
     }
@@ -284,11 +291,11 @@ Para entender melhor como definir o horário usando o padrão do cron veja um ex
 
 ```ts
 import { onPubSubSchedule } from 'firebase-triggers';
-import { EventContext } from 'firebase-functions';
+import { ScheduledEvent } from 'firebase-functions/v2/scheduler';
 
 class TimerCtrl {
     @onPubSubSchedule('0 5 * * *')
-    everyDayAtFiveAM(context: EventContext) {
+    everyDayAtFiveAM(event: ScheduledEvent) {
         console.log('Method executed every day at 5 AM');
     }
 }
@@ -302,8 +309,9 @@ Adicione o decorator `@onRequest()` em um método para ser executado sempre que 
 Ex: Considerando o código abaixo, onde o nome da classe é `UserCtrl` e o método é nomeado como `profile()`, logo a URL externa para a requisição HTTP seria `https://us-central1-project-name.cloudfunctions.net/user-profile`.
 
 ```ts
+import { Request } from 'firebase-functions/lib/common/providers/https';
+import { Response } from 'firebase-functions';
 import { onRequest } from 'firebase-triggers';
-import { Request, Response } from 'firebase-functions';
 
 class UserCtrl {
 
@@ -341,8 +349,9 @@ Segue abaixo uma simulação de REST de dados de usuário usando os _decorators_
 Neste caso a URL externa para a requisição HTTP seria `https://us-central1-project-name.cloudfunctions.net/users`, ignorando a regra de nomenclatura das classes de controle.
 
 ```ts
+import { Request } from 'firebase-functions/lib/common/providers/https';
+import { Response } from 'firebase-functions';
 import { GET, POST, PUT, PATCH, DELETE } from 'firebase-triggers';
-import { Request, Response } from 'firebase-functions';
 
 class UserCtrl {
 
@@ -408,13 +417,13 @@ Chamam isso de [Callable methods](https://firebase.google.com/docs/functions/cal
 O nome do método receberá o prefixo do nome da classe, usando *camelCase* e ignorando o sufixo `Ctrl` da nomenclatura das classes de controle.
 
 ```ts
-import 'reflect-metadata';
-import { EventContext } from 'firebase-functions';
+import { onCall } from 'firebase-triggers';
+import { CallableRequest } from 'firebase-functions/lib/common/providers/https';
 
 class TodoCtrl {
     @onCall()
-    add(data, context: EventContext) {
-        console.log('Add new todo', data);
+    add(event: CallableRequest) {
+        console.log('Add new todo', event.data);
     }
 }
 ```
@@ -434,29 +443,28 @@ Caso o _bucket_ não seja informado, o método será executado para todos os _bu
 Veja [Cloud Storage Events](https://firebase.google.com/docs/functions/gcp-storage-events).
 
 ```ts
-import 'reflect-metadata';
-import { EventContext } from 'firebase-functions';
-import { ObjectMetadata } from 'firebase-functions/v1/storage';
+import {onStorageArchive, onStorageDelete, onStorageFinalize, onStorageMetadataUpdate } from 'firebase-triggers';
+import { StorageEvent } from 'firebase-functions/v2/storage';
 
 class TodoCtrl {
     @onStorageArchive('bucket-name')
-    archive(object: ObjectMetadata, context: EventContext) {
-        console.log(`File ${object.name} archived`);
+    archive(event: StorageEvent) {
+        console.log(`File ${event.data.name} archived`);
     }
     
     @onStorageDelete('bucket-name')
-    del(object: ObjectMetadata, context: EventContext) {
-        console.log(`File ${object.name} deleted`);
+    del(event: StorageEvent) {
+        console.log(`File ${event.data.name} deleted`);
     }
 
     @onStorageFinalize('bucket-name')
-    uploaded(object: ObjectMetadata, context: EventContext) {
-        console.log(`File ${object.name} uploaded`);
+    uploaded(event: StorageEvent) {
+        console.log(`File ${event.data.name} uploaded`);
     }
 
     @onStorageMetadataUpdate('bucket-name')
-    updateMetadata(object: ObjectMetadata, context: EventContext) {
-        console.log(`File ${object.name} updated`);
+    updateMetadata(event: StorageEvent) {
+        console.log(`File ${event.data.name} updated`);
     }
 }
 ```
@@ -494,8 +502,8 @@ class MyCtrl {
         labels: { someKey: 'my-label-value'},
         preserveExternalChanges: false,
     })
-    docWrite(snapshot, context) {
-        const data = snapshot.data();
+    docWrite(event) {
+        const data = event.data.data();
         console.log(`New task added: ${data.title} at ${data.time}`);
     }
 
