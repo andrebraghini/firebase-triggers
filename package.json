@@ -1,6 +1,6 @@
 {
   "name": "firebase-triggers",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "TypeScript decorators to assign Firebase triggers to regular methods",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
