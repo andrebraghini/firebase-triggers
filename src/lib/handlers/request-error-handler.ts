@@ -1,4 +1,5 @@
-import { logger, Response } from 'firebase-functions';
+import { logger } from 'firebase-functions';
+import { Response } from 'firebase-functions/v1';
 import { INTERNAL_ERROR, mergeError } from '../errors';
 
 /**

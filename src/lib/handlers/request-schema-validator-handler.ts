@@ -1,9 +1,9 @@
-import * as functions from 'firebase-functions';
+import { Request, Response } from 'firebase-functions/v1';
 import Ajv from 'ajv';
 import { readFileSync } from 'fs';
 import { SCHEMA_INVALID } from '../errors';
 
-function validateRequest(req: functions.Request, res: functions.Response, schemaFile: string): boolean {
+function validateRequest(req: Request, res: Response, schemaFile: string): boolean {
   if (!schemaFile) {
     return true;
   }

@@ -1,7 +1,7 @@
-import * as functions from 'firebase-functions';
 import { FirebaseTriggerType } from './firebase-trigger-type';
+import { RuntimeOptions } from 'firebase-functions/v1';
 
-export type FirebaseOptions = functions.RuntimeOptions & { region?: string | string[] };
+export type FirebaseOptions = RuntimeOptions & { region?: string | string[] };
 
 /**
  * Firebase function data

@@ -1,4 +1,4 @@
-import { Request, Response } from 'firebase-functions';
+import { Request, Response } from 'firebase-functions/v1';
 import { HTTP_METHOD_NOT_FOUND } from '../errors';
 
 /**

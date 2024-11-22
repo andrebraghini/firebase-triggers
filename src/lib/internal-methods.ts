@@ -44,8 +44,7 @@ export function getGroupName(func: FirebaseFunction): string | undefined {
 function getSliceEnd(className: string): number {
   const suffixToRemove = ['ctrl', 'controller'];
   
-  for (let i = 0; i < suffixToRemove.length; i++) {
-    const suffix = suffixToRemove[i];
+  for (const suffix of suffixToRemove) {
     if (className.toLowerCase().endsWith(suffix))
       return -suffix.length;
   }
