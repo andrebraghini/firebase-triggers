@@ -49,7 +49,7 @@ function getFunctionBuilder(options: FirebaseOptions = {}) {
 /** Methods used to register Firebase triggers */
 const triggerMethods = {
   CALLABLE: (handler: any, options: CallableOptions = {}) => onCall(options, handler),
-  USER_CREATE: (handler: any, options: FirebaseOptions = {}) => getFunctionBuilder(options).auth.user().onCreate(handler),
+  USER_CREATE: (handler: any, options: FirebaseOptions = {}) => functionsV1.auth.user().onCreate(handler),
   USER_DELETE: (handler: any, options?: FirebaseOptions) => getFunctionBuilder(options).auth.user().onDelete(handler),
   HTTP_REQUEST: (handler: any, options: HttpsOptions = {}) => onRequest(options, handler),
   FIRESTORE_CREATE: (handler: any, options: string | DocumentOptions<string>) => onDocumentCreated(options as any, handler),
