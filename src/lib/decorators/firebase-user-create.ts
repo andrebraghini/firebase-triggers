@@ -5,6 +5,18 @@ import { FirebaseFunction, FirebaseTriggerType } from '../types';
 /**
  * Decorator that adds the class method to the Cloud Functions list triggered when creating a new
  * user in Firebase Authentication.
+ *
+ * @example
+ * import { onFirebaseUserCreate } from 'firebase-triggers';
+ * import { AuthBlockingEvent } from 'firebase-functions/v2/identity';
+ * import { EventContext } from 'firebase-functions';
+ * 
+ * class UserCtrl {
+ *     \@onFirebaseUserCreate()
+ *     onCreate(event: AuthBlockingEvent) {
+ *         console.log(`${event.data.displayName} joined us`);
+ *     }
+ * }
  */
 export function onFirebaseUserCreate(options: BlockingOptions = {}) {
   return (target: any, key: string) => {

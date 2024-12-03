@@ -9,6 +9,22 @@ import { FirebaseFunction, FirebaseTriggerType } from '../types';
  * @param document Firestore document/collection path or complete options.
  *                 To use wildcard keys, enter the parameters between keys.
  *                 e.g. 'user/{uid}/account/{accountId}'
+ * @example
+ * import { FirestoreEvent, QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
+ * import { ParamsOf } from 'firebase-functions/lib/common/params';
+ * import { onFirestoreDelete } from 'firebase-triggers';
+ * 
+ * class TodoCtrl {
+ *     \@onFirestoreDelete('todo/{id}')
+ *     onDelete(event: FirestoreEvent<QueryDocumentSnapshot, ParamsOf<string>>) {
+ *         // Get an object representing the document. e.g. { title: 'Wash the dishes', time: '12:00' }
+ *         const oldValue = event.data.data();
+ *         // access a particular field as you would any JS property
+ *         const title = oldValue.title;
+ * 
+ *         console.log(`Task "${title}" removed`);
+ *     }
+ * }
  */
 export function onFirestoreDelete(document: string | DocumentOptions) {
   const options = typeof document === 'string' ? { document } : document;

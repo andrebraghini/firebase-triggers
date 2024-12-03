@@ -105,7 +105,16 @@ function getHTTPMethodHandler(
 }
 
 /**
- * Returns a list of methods linked to triggers to export at application startup
+ * Returns a list of methods linked to triggers to export at application startup.
+ *
+ * @example
+ * import 'reflect-metadata';
+ * import { getFirebaseFunctionListToExport } from 'firebase-triggers';
+ * 
+ * const list = getFirebaseFunctionListToExport();
+ * for (const key in list) {
+ *   exports[key] = list[key];
+ * }
  */
 export function getFirebaseFunctionListToExport(): FirebaseFunctionList {
   const result: FirebaseFunctionList = {};

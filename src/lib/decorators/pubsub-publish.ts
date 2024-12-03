@@ -7,6 +7,18 @@ import { FirebaseFunction, FirebaseTriggerType } from '../types';
  * made via PubSub on the specified topic.
  * 
  * @param topic PubSub topic to subscribe
+ * @example
+ * import { CloudEvent } from 'firebase-functions/lib/v2/core';
+ * import { MessagePublishedData } from 'firebase-functions/v2/pubsub';
+ * import { onPubSubPublish } from 'firebase-triggers';
+ * 
+ * class SampleCtrl {
+ *     \@onPubSubPublish('my-topic')
+ *     doSomething(event: CloudEvent<MessagePublishedData<any>>) {
+ *         const publishedData = message.json;
+ *         console.log('Data published via PubSub on my-topic:', publishedData);
+ *     }
+ * }
  */
 export function onPubSubPublish(topic: string | PubSubOptions) {
   const options = typeof topic === 'string' ? { topic } : topic;

@@ -7,6 +7,16 @@ import { FirebaseFunction, FirebaseTriggerType } from '../types';
  * made via PubSub triggered via Cron.
  *
  * @param schedule Cron time interval (ex: '5 11 * * *' ou 'every 5 minutes')
+ * @example
+ * import { ScheduledEvent } from 'firebase-functions/v2/scheduler';
+ * import { onPubSubSchedule } from 'firebase-triggers';
+ * 
+ * class TimerCtrl {
+ *     \@onPubSubSchedule('0 5 * * *')
+ *     everyDayAtFiveAM(event: ScheduledEvent) {
+ *         console.log('Method executed every day at 5 AM');
+ *     }
+ * }
  */
 export function onPubSubSchedule(schedule: string | ScheduleOptions) {
   const options = typeof schedule === 'string' ? { schedule } : schedule;

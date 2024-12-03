@@ -61,6 +61,18 @@ function extractHttpsOptions(options?: string | RequestOptions & HttpsOptions): 
  * @param opt.methods HTTP methods accepted in the request.
  * @param opt.path URL suffix also used as method name in GCP. (optional)
  *                 If you do not enter the path, the method name will be used. (Recommended)
+ * @example
+ * import { Response } from 'firebase-functions';
+ * import { onRequest } from 'firebase-triggers';
+ * import { Request } from 'firebase-functions/lib/common/providers/https';
+ * 
+ * class UserCtrl {
+ *     \@onRequest()
+ *     async profile(request: Request, response: Response) {
+ *         const profile = await loadProfile(request.body.id);
+ *         response.json(profile);
+ *     }
+ * }
  */
 export function onRequest(opt: string | RequestOptions & HttpsOptions = {}) {
   const requestOptions = extractRequestOptions(opt);
@@ -87,6 +99,18 @@ export function onRequest(opt: string | RequestOptions & HttpsOptions = {}) {
  * 
  * @param path URL suffix also used as method name in GCP. (optional)
  *             If you do not enter the path, the method name will be used. (Recommended)
+ * 
+ * @example
+ * import { Request } from 'firebase-functions/lib/common/providers/https';
+ * import { Response } from 'firebase-functions';
+ * import { GET } from 'firebase-triggers';
+ * 
+ * class UserCtrl {
+ *     \@GET('users')
+ *     async get(request: Request, response: Response) {
+ *         response.json([]);
+ *     }
+ * }
  */
 export function GET(path: string | HttpsOptions & { path?: string } = {}) {
   return (target: any, key: string) => {
@@ -102,6 +126,18 @@ export function GET(path: string | HttpsOptions & { path?: string } = {}) {
  * 
  * @param path URL suffix also used as method name in GCP. (optional)
  *             If you do not enter the path, the method name will be used. (Recommended)
+ * 
+ * @example
+ * import { Request } from 'firebase-functions/lib/common/providers/https';
+ * import { Response } from 'firebase-functions';
+ * import { POST } from 'firebase-triggers';
+ * 
+ * class UserCtrl {
+ *     \@POST('users')
+ *     async post(request: Request, response: Response) {
+ *         response.status(201).send();
+ *     }
+ * }
  */
 export function POST(path: string | HttpsOptions & { path?: string } = {}) {
   return (target: any, key: string) => {
@@ -117,6 +153,18 @@ export function POST(path: string | HttpsOptions & { path?: string } = {}) {
  * 
  * @param path URL suffix also used as method name in GCP. (optional)
  *             If you do not enter the path, the method name will be used. (Recommended)
+ * 
+ * @example
+ * import { Request } from 'firebase-functions/lib/common/providers/https';
+ * import { Response } from 'firebase-functions';
+ * import { PUT } from 'firebase-triggers';
+ * 
+ * class UserCtrl {
+ *     \@PUT('users')
+ *     async put(request: Request, response: Response) {
+ *         response.status(201).send();
+ *     }
+ * }
  */
 export function PUT(path: string | HttpsOptions & { path?: string } = {}) {
   return (target: any, key: string) => {
@@ -130,6 +178,18 @@ export function PUT(path: string | HttpsOptions & { path?: string } = {}) {
  * Decorator that adds the method to the Cloud Functions list triggered when receiving an PATCH HTTP request
  * @param path URL suffix also used as method name in GCP. (optional)
  *             If you do not enter the path, the method name will be used. (Recommended)
+ * 
+ * @example
+ * import { Request } from 'firebase-functions/lib/common/providers/https';
+ * import { Response } from 'firebase-functions';
+ * import { PATCH } from 'firebase-triggers';
+ * 
+ * class UserCtrl {
+ *     \@PATCH('users')
+ *     async patch(request: Request, response: Response) {
+ *         response.status(201).send();
+ *     }
+ * }
  */
 export function PATCH(path: string | HttpsOptions & { path?: string } = {}) {
   return (target: any, key: string) => {
@@ -143,6 +203,18 @@ export function PATCH(path: string | HttpsOptions & { path?: string } = {}) {
  * Decorator that adds the method to the Cloud Functions list triggered when receiving an DELETE HTTP request
  * @param path URL suffix also used as method name in GCP. (optional)
  *             If you do not enter the path, the method name will be used. (Recommended)
+ * 
+ * @example
+ * import { Request } from 'firebase-functions/lib/common/providers/https';
+ * import { Response } from 'firebase-functions';
+ * import { DELETE } from 'firebase-triggers';
+ * 
+ * class UserCtrl {
+ *     @DELETE('users')
+ *     async del(request: Request, response: Response) {
+ *         response.status(201).send();
+ *     }
+ * }
  */
 export function DELETE(path: string | HttpsOptions & { path?: string } = {}) {
   return (target: any, key: string) => {

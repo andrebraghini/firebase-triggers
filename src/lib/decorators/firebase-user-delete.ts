@@ -5,6 +5,18 @@ import { FirebaseFunction, FirebaseTriggerType } from '../types';
 /**
  * Decorator that adds the method to the Cloud Functions list that is triggered when removing a
  * user from Firebase Authentication.
+ *
+ * @example
+ * import { onFirebaseUserDelete } from 'firebase-triggers';
+ * import { UserRecord } from 'firebase-functions/auth';
+ * import { EventContext } from 'firebase-functions';
+ * 
+ * class UserCtrl {
+ *     \@onFirebaseUserDelete()
+ *     onDelete(user: UserRecord, context: EventContext) {
+ *         console.log(`${user.displayName} left us`);
+ *     }
+ * }
  */
 export function onFirebaseUserDelete(options: RuntimeOptions = {}) {
   return (target: any, key: string) => {
