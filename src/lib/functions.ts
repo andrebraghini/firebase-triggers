@@ -23,6 +23,7 @@ import { requestErrorHandler } from './handlers';
 import { multipleRequestHandler } from './handlers/multiple-request-handler';
 import { requestSchemaValidatorHandler } from './handlers/request-schema-validator-handler';
 import { getFirebaseFunctionList, getGroupName } from './internal-methods';
+import { beforeUserCreated } from 'firebase-functions/identity';
 
 /**
  * Get Firebase Function Builder setting the Firebase Runtime Options.
@@ -49,7 +50,7 @@ function getFunctionBuilder(options: FirebaseOptions = {}) {
 /** Methods used to register Firebase triggers */
 const triggerMethods = {
   CALLABLE: (handler: any, options: CallableOptions = {}) => onCall(options, handler),
-  USER_CREATE: (handler: any, options: FirebaseOptions = {}) => functionsV1.auth.user().onCreate(handler),
+  USER_CREATE: (handler: any, options: FirebaseOptions = {}) => beforeUserCreated(options as any, handler),
   USER_DELETE: (handler: any, options?: FirebaseOptions) => getFunctionBuilder(options).auth.user().onDelete(handler),
   HTTP_REQUEST: (handler: any, options: HttpsOptions = {}) => onRequest(options, handler),
   FIRESTORE_CREATE: (handler: any, options: string | DocumentOptions<string>) => onDocumentCreated(options as any, handler),
