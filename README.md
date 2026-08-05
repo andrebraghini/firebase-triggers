@@ -15,12 +15,14 @@
   <a href="https://codecov.io/gh/andrebraghini/firebase-triggers">
     <img src="https://codecov.io/gh/andrebraghini/firebase-triggers/branch/main/graph/badge.svg?token=SF8KVUI3A8"/>
   </a>
-  <img alt="Build result" src="https://travis-ci.org/andrebraghini/firebase-triggers.svg?branch=main">
+  <a href="https://github.com/andrebraghini/firebase-triggers/actions/workflows/ci.yml">
+    <img alt="CI" src="https://github.com/andrebraghini/firebase-triggers/actions/workflows/ci.yml/badge.svg"/>
+  </a>
 
   <br>
 
   <i>
-    A TypeScript library that provides decorators to link class methods to Firebase Authentication, Firestore and PubSub triggers. 
+    A TypeScript library that provides decorators to link class methods to Firebase Authentication, Firestore and PubSub triggers (Firebase Functions Gen2).
   </i>
 </p>
 
@@ -41,12 +43,18 @@
 
 4. [Schema validation](#schema-validation)
 
-5. [Sample project](https://github.com/andrebraghini/firebase-triggers-sample)
+5. [Migration from 2.x](./MIGRATION.md)
+
+6. [Sample project](https://github.com/andrebraghini/firebase-triggers-sample)
 
 
 ## Installation
 
-`npm install --save firebase-triggers`
+Requires **Node.js 20+**. Install the library together with the Firebase peer packages:
+
+```bash
+npm install firebase-triggers firebase-functions@^7 firebase-admin@^14
+```
 
 
 ## Usage
@@ -78,8 +86,8 @@ Assuming you have an `UserCtrl` class with `update()` and `list()` methods, thes
 import 'reflect-metadata';
 import { ParamsOf } from 'firebase-functions/lib/common/params';
 import { FirestoreEvent, QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
-import { Request } from 'firebase-functions/lib/common/providers/https';
-import { Response } from 'firebase-functions';
+import { Request } from 'firebase-functions/v2/https';
+import { Response } from 'express';
 import { getFirebaseFunctionListToExport, onFirestoreCreate, onRequest } from 'firebase-triggers';
 
 class MyCtrl {
@@ -109,19 +117,33 @@ To define Firebase Functions triggers, just add the desired decorator on the met
 
 e.g. `import { onRequest } from 'firebase-triggers';`
 
+### @beforeFirebaseUserCreate()
+
+Blocking trigger executed **before** a user is created in Firebase Authentication (`beforeUserCreated`).
+
+```ts
+import { beforeFirebaseUserCreate } from 'firebase-triggers';
+import { AuthBlockingEvent } from 'firebase-functions/v2/identity';
+
+class UserCtrl {
+    @beforeFirebaseUserCreate()
+    beforeCreate(event: AuthBlockingEvent) {
+        console.log(`${event.data?.displayName} is joining`);
+    }
+}
+```
+
 ### @onFirebaseUserCreate()
 
-Add the `@onFirebaseUserCreate()` decorator to a method to be executed whenever a new user is created in Firebase Authentication.
+Event trigger executed when a new user is created (`onUserCreated`). Upstream Auth event triggers may be marked beta.
 
 ```ts
 import { onFirebaseUserCreate } from 'firebase-triggers';
-import { AuthBlockingEvent } from 'firebase-functions/v2/identity';
-import { EventContext } from 'firebase-functions';
 
 class UserCtrl {
     @onFirebaseUserCreate()
-    onCreate(event: AuthBlockingEvent) {
-        console.log(`${event.data.displayName} joined us`);
+    onCreate(event: unknown) {
+        console.log('user created', event);
     }
 }
 ```
@@ -129,17 +151,15 @@ class UserCtrl {
 
 ### @onFirebaseUserDelete()
 
-Add the `@onFirebaseUserDelete()` decorator to a method to be executed whenever a user is removed from Firebase Authentication.
+Event trigger executed when a user is removed (`onUserDeleted`). Upstream Auth event triggers may be marked beta.
 
 ```ts
 import { onFirebaseUserDelete } from 'firebase-triggers';
-import { UserRecord } from 'firebase-functions/auth';
-import { EventContext } from 'firebase-functions';
 
 class UserCtrl {
     @onFirebaseUserDelete()
-    onDelete(user: UserRecord, context: EventContext) {
-        console.log(`${user.displayName} left us`);
+    onDelete(event: unknown) {
+        console.log('user deleted', event);
     }
 }
 ```

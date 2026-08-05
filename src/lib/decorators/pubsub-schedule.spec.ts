@@ -1,4 +1,6 @@
 import 'reflect-metadata';
+import { describe, it } from 'node:test';
+import { expect, fail } from '../../../test/expect';
 import { FirebaseTriggerType } from '../types';
 import { getFirebaseFunctionList } from '../internal-methods';
 import { onPubSubSchedule } from './pubsub-schedule';

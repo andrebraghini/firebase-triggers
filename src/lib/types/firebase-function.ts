@@ -1,7 +1,4 @@
 import { FirebaseTriggerType } from './firebase-trigger-type';
-import { RuntimeOptions } from 'firebase-functions/v1';
-
-export type FirebaseOptions = RuntimeOptions & { region?: string | string[] };
 
 /**
  * Firebase function data
@@ -27,7 +24,7 @@ export interface FirebaseFunction {
    */
   key?: string | any;
 
-  /** Firebase runtime options */
+  /** Firebase runtime options for the specific Gen2 trigger */
   options?: any;
 }
 

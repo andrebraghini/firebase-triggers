@@ -1,13 +1,16 @@
-import * as functionsV1 from 'firebase-functions/v1';
 import { ScheduleOptions, onSchedule } from 'firebase-functions/v2/scheduler';
-import { FirebaseFunction, FirebaseTriggerType, FirebaseFunctionList, FirebaseOptions } from './types';
+import { FirebaseFunction, FirebaseTriggerType, FirebaseFunctionList } from './types';
 import { CallableOptions, HttpsOptions, onCall, onRequest } from 'firebase-functions/v2/https';
 import {
   DocumentOptions,
   onDocumentCreated,
+  onDocumentCreatedWithAuthContext,
   onDocumentDeleted,
+  onDocumentDeletedWithAuthContext,
   onDocumentUpdated,
+  onDocumentUpdatedWithAuthContext,
   onDocumentWritten,
+  onDocumentWrittenWithAuthContext,
 } from 'firebase-functions/v2/firestore';
 import { PubSubOptions, onMessagePublished } from 'firebase-functions/v2/pubsub';
 import {
@@ -17,46 +20,37 @@ import {
   onObjectFinalized,
   onObjectMetadataUpdated,
 } from 'firebase-functions/v2/storage';
+import { AuthEventOptions, BlockingOptions, beforeUserCreated, onUserCreated, onUserDeleted } from './firebase-identity';
 import { existsSync } from 'fs';
 import { resolve } from 'path';
 import { requestErrorHandler } from './handlers';
 import { multipleRequestHandler } from './handlers/multiple-request-handler';
 import { requestSchemaValidatorHandler } from './handlers/request-schema-validator-handler';
 import { getFirebaseFunctionList, getGroupName } from './internal-methods';
-import { beforeUserCreated } from 'firebase-functions/identity';
-
-/**
- * Get Firebase Function Builder setting the Firebase Runtime Options.
- * 
- * @param options Firebase runtime options
- * @returns Firebase Function Builder
- */
-function getFunctionBuilder(options: FirebaseOptions = {}) {
-  const parsedOptions = { ...options };
-  delete parsedOptions.region;
-
-  let result = functionsV1.runWith(parsedOptions);
-
-  if (options.region) {
-    const regions = typeof options.region === 'string' ? [options.region] : options.region;
-    if (regions.length) {
-      result = result.region(...regions);
-    }
-  }
-
-  return result;
-}
 
 /** Methods used to register Firebase triggers */
 const triggerMethods = {
   CALLABLE: (handler: any, options: CallableOptions = {}) => onCall(options, handler),
-  USER_CREATE: (handler: any, options: FirebaseOptions = {}) => beforeUserCreated(options as any, handler),
-  USER_DELETE: (handler: any, options?: FirebaseOptions) => getFunctionBuilder(options).auth.user().onDelete(handler),
+  BEFORE_USER_CREATE: (handler: any, options: BlockingOptions = {}) => beforeUserCreated(options, handler),
+  USER_CREATE: (handler: any, options: AuthEventOptions = {}) => onUserCreated(options, handler),
+  USER_DELETE: (handler: any, options: AuthEventOptions = {}) => onUserDeleted(options, handler),
   HTTP_REQUEST: (handler: any, options: HttpsOptions = {}) => onRequest(options, handler),
-  FIRESTORE_CREATE: (handler: any, options: string | DocumentOptions<string>) => onDocumentCreated(options as any, handler),
-  FIRESTORE_UPDATE: (handler: any, options: string | DocumentOptions<string>) => onDocumentUpdated(options as any, handler),
-  FIRESTORE_DELETE: (handler: any, options: string | DocumentOptions<string>) => onDocumentDeleted(options as any, handler),
-  FIRESTORE_WRITE: (handler: any, options: string | DocumentOptions<string>) => onDocumentWritten(options as any, handler),
+  FIRESTORE_CREATE: (handler: any, options: string | DocumentOptions<string>) =>
+    onDocumentCreated(options as any, handler),
+  FIRESTORE_UPDATE: (handler: any, options: string | DocumentOptions<string>) =>
+    onDocumentUpdated(options as any, handler),
+  FIRESTORE_DELETE: (handler: any, options: string | DocumentOptions<string>) =>
+    onDocumentDeleted(options as any, handler),
+  FIRESTORE_WRITE: (handler: any, options: string | DocumentOptions<string>) =>
+    onDocumentWritten(options as any, handler),
+  FIRESTORE_CREATE_WITH_AUTH_CONTEXT: (handler: any, options: string | DocumentOptions<string>) =>
+    onDocumentCreatedWithAuthContext(options as any, handler),
+  FIRESTORE_UPDATE_WITH_AUTH_CONTEXT: (handler: any, options: string | DocumentOptions<string>) =>
+    onDocumentUpdatedWithAuthContext(options as any, handler),
+  FIRESTORE_DELETE_WITH_AUTH_CONTEXT: (handler: any, options: string | DocumentOptions<string>) =>
+    onDocumentDeletedWithAuthContext(options as any, handler),
+  FIRESTORE_WRITE_WITH_AUTH_CONTEXT: (handler: any, options: string | DocumentOptions<string>) =>
+    onDocumentWrittenWithAuthContext(options as any, handler),
   PUBSUB_PUBLISH: (handler: any, options: string | PubSubOptions) => onMessagePublished(options as any, handler),
   PUBSUB_SCHEDULE: (handler: any, options: ScheduleOptions) => onSchedule(options, handler),
   STORAGE_ARCHIVE: (handler: any, options: StorageOptions) => onObjectArchived(options, handler),
@@ -111,7 +105,7 @@ function getHTTPMethodHandler(
  * @example
  * import 'reflect-metadata';
  * import { getFirebaseFunctionListToExport } from 'firebase-triggers';
- * 
+ *
  * const list = getFirebaseFunctionListToExport();
  * for (const key in list) {
  *   exports[key] = list[key];
@@ -124,7 +118,7 @@ export function getFirebaseFunctionListToExport(): FirebaseFunctionList {
       [httpMethod: string]: {
         handler: Function;
         options: HttpsOptions;
-      }
+      };
     };
   } = {};
 
@@ -142,8 +136,8 @@ export function getFirebaseFunctionListToExport(): FirebaseFunctionList {
         const methods = !func.key
           ? ['DEFAULT']
           : Array.isArray(func.key.methods)
-          ? func.key.methods
-          : [func.key.methods || 'DEFAULT'];
+            ? func.key.methods
+            : [func.key.methods || 'DEFAULT'];
         if (!httpRequestFunctions[fullMethodName]) {
           httpRequestFunctions[fullMethodName] = {};
         }
@@ -175,9 +169,8 @@ export function getFirebaseFunctionListToExport(): FirebaseFunctionList {
     const groupName = name.length > 1 ? name[0] : undefined;
     const cloudFunctionName = name.length > 1 ? name[1] : name[0];
     const methodHandler = getHTTPMethodHandler(fullMethodName, httpRequestFunctions[fullMethodName]);
-    const options = Object
-      .values(httpRequestFunctions[fullMethodName])
-      .find(item => !!item.options) || {};
+    const options =
+      Object.values(httpRequestFunctions[fullMethodName]).find((item) => !!item.options)?.options || {};
 
     if (groupName) {
       if (!result[groupName]) {

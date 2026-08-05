@@ -1,4 +1,6 @@
 import 'reflect-metadata';
+import { describe, it } from 'node:test';
+import { expect, fail } from '../../../test/expect';
 import { FirebaseTriggerType } from '../types';
 import { getFirebaseFunctionList } from '../internal-methods';
 import { DELETE, GET, onRequest, PATCH, POST, PUT } from './request';
@@ -145,7 +147,7 @@ describe('@onRequest', () => {
       expect(func.methodName).toBe('httpRequestWithOpt');
       expect(func.trigger).toBe(FirebaseTriggerType.HTTP_REQUEST);
       expect(func.key.path).toBe('pathWithOpt');
-      expect(func.key.methods).toMatchObject(['GET', 'POST']);
+      expect(func.key.methods).toEqual(['GET', 'POST']);
       expect(func.options?.memory).toBe('128MiB');
     } else {
       fail('Method httpRequestWithOpt() not found');

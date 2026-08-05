@@ -1,4 +1,6 @@
 import 'reflect-metadata';
+import { describe, it } from 'node:test';
+import { expect } from '../../test/expect';
 import {
   onCall,
   onFirebaseUserCreate,
@@ -80,7 +82,6 @@ class DemoCtrl {
   }
 }
 
-// tslint:disable-next-line: max-classes-per-file
 class SecondClassCtrl {
   @onFirebaseUserCreate()
   userCreate() {
@@ -133,7 +134,6 @@ class SecondClassCtrl {
   }
 }
 
-// tslint:disable-next-line: max-classes-per-file
 class ThirdClassCtrl {
   @GET('rest')
   get() {
@@ -161,7 +161,6 @@ class ThirdClassCtrl {
   }
 }
 
-// tslint:disable-next-line: max-classes-per-file
 class StorageCtrl {
   @onStorageArchive('bucket-name')
   archive() {

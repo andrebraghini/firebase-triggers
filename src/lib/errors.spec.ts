@@ -1,3 +1,5 @@
+import { describe, it } from 'node:test';
+import { expect } from '../../test/expect';
 import { mergeError } from './errors';
 
 describe('mergeError()', () => {

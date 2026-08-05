@@ -1,4 +1,6 @@
 import 'reflect-metadata';
+import { describe, it } from 'node:test';
+import { expect, fail } from '../../../test/expect';
 import { FirebaseTriggerType } from '../types';
 import { getFirebaseFunctionList } from '../internal-methods';
 import { onFirebaseUserDelete } from './firebase-user-delete';
@@ -9,7 +11,7 @@ class DemoCtrl {
     return 'userDelete';
   }
 
-  @onFirebaseUserDelete({ memory: '256MB' })
+  @onFirebaseUserDelete({ memory: '256MiB' })
   userDeleteWithOptions() {
     return 'userDeleteWithOptions';
   }
@@ -46,7 +48,7 @@ describe('@onFirebaseUserDelete', () => {
       expect(func.className).toBe('DemoCtrl');
       expect(func.methodName).toBe('userDeleteWithOptions');
       expect(func.trigger).toBe(FirebaseTriggerType.USER_DELETE);
-      expect(func.options?.memory).toBe('256MB');
+      expect(func.options?.memory).toBe('256MiB');
     } else {
       fail('Method userDeleteWithOptions() not found');
     }
@@ -54,7 +56,7 @@ describe('@onFirebaseUserDelete', () => {
 
   it('should define metadata reflection', () => {
     // Setup
-    const expectedMetadata = { memory: '256MB' };
+    const expectedMetadata = { memory: '256MiB' };
 
     // Execute
     const result = Reflect.getMetadata('onFirebaseUserDelete', DemoCtrl.prototype, 'userDeleteWithOptions');

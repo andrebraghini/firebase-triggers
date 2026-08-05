@@ -1,15 +1,16 @@
+import { describe, it, before, after } from 'node:test';
+import { expect } from '../../../test/expect';
+import { fn } from '../../../test/mock';
+import { mkdtempSync, writeFileSync, rmSync } from 'fs';
+import { join } from 'path';
+import { tmpdir } from 'os';
 import { requestSchemaValidatorHandler } from './request-schema-validator-handler';
-import { readFileSync } from 'fs';
 import { SCHEMA_INVALID } from '../errors';
 
-jest.mock('fs');
-
 describe('requestSchemaValidatorHandler()', () => {
-  const res = {
-    status: jest.fn(),
-    json: jest.fn(),
-    sendFile: jest.fn(),
-  };
+  let schemaDir = '';
+  let schemaFile = '';
+
   const emailAndPasswordSchema = {
     $schema: 'http://json-schema.org/draft-07/schema',
     type: 'object',
@@ -26,40 +27,52 @@ describe('requestSchemaValidatorHandler()', () => {
     },
   };
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-    res.status.mockReturnThis();
-    res.json.mockReturnThis();
-    res.sendFile.mockReturnThis();
+  before(() => {
+    schemaDir = mkdtempSync(join(tmpdir(), 'firebase-triggers-schema-'));
+    schemaFile = join(schemaDir, 'schemaFile.json');
+    writeFileSync(schemaFile, JSON.stringify(emailAndPasswordSchema));
   });
 
-  it('should return schema when called with /schema.json', () => {
-    // Setup
+  after(() => {
+    rmSync(schemaDir, { recursive: true, force: true });
+  });
+
+  function createResponse() {
+    const res = {
+      status: fn(),
+      json: fn(),
+      sendFile: fn(),
+    };
+    res.status.mockImplementation(() => res);
+    res.json.mockImplementation(() => res);
+    res.sendFile.mockImplementation(() => res);
+    return res;
+  }
+
+  it('should return schema when called with /schema.json', async () => {
     const req = { path: '/schema.json' };
-    const originalMethod = jest.fn();
+    const res = createResponse();
+    const originalMethod = fn();
 
-    // Execute
-    const handledMethod = requestSchemaValidatorHandler(originalMethod, 'fileName.json');
-    return handledMethod(req, res).then(() => {
-      // Validate
-      expect(res.sendFile).toBeCalledWith('fileName.json');
-      expect(originalMethod).not.toBeCalled();
-    });
+    const handledMethod = requestSchemaValidatorHandler(originalMethod, schemaFile);
+    await handledMethod(req, res);
+
+    expect(res.sendFile).toBeCalledWith(schemaFile);
+    expect(originalMethod).not.toBeCalled();
   });
-  it('should execute the original method if the filename is empty', () => {
-    // Setup
+
+  it('should execute the original method if the filename is empty', async () => {
     const req = {};
-    const originalMethod = jest.fn();
+    const res = createResponse();
+    const originalMethod = fn();
 
-    // Execute
     const handledMethod = requestSchemaValidatorHandler(originalMethod, '');
-    return handledMethod(req, res).then(() => {
-      // Validate
-      expect(originalMethod).toBeCalledWith(req, res);
-    });
+    await handledMethod(req, res);
+
+    expect(originalMethod).toBeCalledWith(req, res);
   });
-  it('should execute the original method if schema is valid', () => {
-    // Setup
+
+  it('should execute the original method if schema is valid', async () => {
     const req = {
       path: '',
       body: {
@@ -67,44 +80,31 @@ describe('requestSchemaValidatorHandler()', () => {
         password: 'abc123',
       },
     };
-    (readFileSync as jest.Mock).mockReturnValue({
-      toString: () => JSON.stringify(emailAndPasswordSchema),
-    });
+    const res = createResponse();
+    const originalMethod = fn();
 
-    const originalMethod = jest.fn();
+    const handledMethod = requestSchemaValidatorHandler(originalMethod, schemaFile);
+    await handledMethod(req, res);
 
-    // Execute
-    const handledMethod = requestSchemaValidatorHandler(originalMethod, 'schemaFile.json');
-    return handledMethod(req, res).then(() => {
-      // Validate
-      expect(readFileSync).toBeCalledWith('schemaFile.json');
-      expect(originalMethod).toBeCalledWith(req, res);
-    });
+    expect(originalMethod).toBeCalledWith(req, res);
   });
-  it('should respond with error if the request body is invalid', () => {
-    // Setup
+
+  it('should respond with error if the request body is invalid', async () => {
     const req = {
       path: '',
       body: { password: 'abc123' },
     };
-    const expectedResponse = {
+    const res = createResponse();
+    const originalMethod = fn();
+
+    const handledMethod = requestSchemaValidatorHandler(originalMethod, schemaFile);
+    await handledMethod(req, res);
+
+    expect(res.status).toBeCalledWith(400);
+    expect(res.json.mock.calls[0][0]).toMatchObject({
       success: false,
       error: SCHEMA_INVALID,
-      validations: {},
-    };
-    (readFileSync as jest.Mock).mockReturnValue({
-      toString: () => JSON.stringify(emailAndPasswordSchema),
     });
-
-    const originalMethod = jest.fn();
-
-    // Execute
-    const handledMethod = requestSchemaValidatorHandler(originalMethod, 'schemaFile.json');
-    return handledMethod(req, res).then(() => {
-      // Validate
-      expect(res.status).toBeCalledWith(400);
-      expect(res.json.mock.calls[0][0]).toMatchObject(expectedResponse);
-      expect(originalMethod).not.toBeCalled();
-    });
+    expect(originalMethod).not.toBeCalled();
   });
 });

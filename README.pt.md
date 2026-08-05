@@ -15,12 +15,14 @@
   <a href="https://codecov.io/gh/andrebraghini/firebase-triggers">
     <img src="https://codecov.io/gh/andrebraghini/firebase-triggers/branch/main/graph/badge.svg?token=SF8KVUI3A8"/>
   </a>
-  <img alt="Build result" src="https://travis-ci.org/andrebraghini/firebase-triggers.svg?branch=main">
+  <a href="https://github.com/andrebraghini/firebase-triggers/actions/workflows/ci.yml">
+    <img alt="CI" src="https://github.com/andrebraghini/firebase-triggers/actions/workflows/ci.yml/badge.svg"/>
+  </a>
 
   <br>
 
   <i>
-    Uma biblioteca TypeScript que provê decorators para vincular métodos de classes a gatilhos do Firebase Authentication, Firestore e PubSub.
+    Uma biblioteca TypeScript que provê decorators para vincular métodos de classes a gatilhos do Firebase Authentication, Firestore e PubSub (Firebase Functions Gen2).
   </i>
 </p>
 
@@ -41,12 +43,18 @@
 
 4. [Validação de esquema](#validação-de-esquema)
 
-5. [Projeto de exemplo](https://github.com/andrebraghini/firebase-triggers-sample)
+5. [Migração da 2.x](./MIGRATION.md)
+
+6. [Projeto de exemplo](https://github.com/andrebraghini/firebase-triggers-sample)
 
 
 ## Instalação
 
-`npm install --save firebase-triggers`
+Requer **Node.js 20+**. Instale a biblioteca junto com os pacotes peer do Firebase:
+
+```bash
+npm install firebase-triggers firebase-functions@^7 firebase-admin@^14
+```
 
 
 ## Uso
@@ -78,8 +86,8 @@ Supondo que você tenha uma classe `UserCtrl` com os métodos `update()` e `list
 import 'reflect-metadata';
 import { ParamsOf } from 'firebase-functions/lib/common/params';
 import { FirestoreEvent, QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
-import { Request } from 'firebase-functions/lib/common/providers/https';
-import { Response } from 'firebase-functions';
+import { Request } from 'firebase-functions/v2/https';
+import { Response } from 'express';
 import { getFirebaseFunctionListToExport, onFirestoreCreate, onRequest } from 'firebase-triggers';
 
 class MyCtrl {
@@ -111,19 +119,33 @@ Para definir gatilhos do _Firebase Functions_, basta adicionar o _decorator_ des
 Ex: `import { onRequest } from 'firebase-triggers';`
 
 
+### @beforeFirebaseUserCreate()
+
+Gatilho *blocking* executado **antes** da criação do usuário no Firebase Authentication (`beforeUserCreated`).
+
+```ts
+import { beforeFirebaseUserCreate } from 'firebase-triggers';
+import { AuthBlockingEvent } from 'firebase-functions/v2/identity';
+
+class UserCtrl {
+    @beforeFirebaseUserCreate()
+    beforeCreate(event: AuthBlockingEvent) {
+        console.log(`${event.data?.displayName} is joining`);
+    }
+}
+```
+
 ### @onFirebaseUserCreate()
 
-Adicione o *decorator* `@onFirebaseUserCreate()` em um método para ser executado sempre que um novo usuário for criado no *Firebase Authentication*.
+Gatilho de evento executado quando um novo usuário é criado (`onUserCreated`). Os triggers de evento de Auth no upstream podem estar em beta.
 
 ```ts
 import { onFirebaseUserCreate } from 'firebase-triggers';
-import { AuthBlockingEvent } from 'firebase-functions/v2/identity';
-import { EventContext } from 'firebase-functions';
 
 class UserCtrl {
     @onFirebaseUserCreate()
-    onCreate(event: AuthBlockingEvent) {
-        console.log(`${event.data.displayName} joined us`);
+    onCreate(event: unknown) {
+        console.log('user created', event);
     }
 }
 ```
@@ -131,17 +153,15 @@ class UserCtrl {
 
 ### @onFirebaseUserDelete()
 
-Adicione o *decorator* `@onFirebaseUserDelete()` em um método para ser executado sempre que um usuário for removido do *Firebase Authentication*.
+Gatilho de evento executado quando um usuário é removido (`onUserDeleted`). Os triggers de evento de Auth no upstream podem estar em beta.
 
 ```ts
 import { onFirebaseUserDelete } from 'firebase-triggers';
-import { UserRecord } from 'firebase-functions/auth';
-import { EventContext } from 'firebase-functions';
 
 class UserCtrl {
     @onFirebaseUserDelete()
-    onDelete(user: UserRecord, context: EventContext) {
-        console.log(`${user.displayName} left us`);
+    onDelete(event: unknown) {
+        console.log('user deleted', event);
     }
 }
 ```

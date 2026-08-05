@@ -1,5 +1,8 @@
 node_modules
 /coverage
 /lib
+/lib-test
+.tmp-sample
+*.tgz
 
 .vscode

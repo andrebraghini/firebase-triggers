@@ -62,9 +62,9 @@ function extractHttpsOptions(options?: string | RequestOptions & HttpsOptions): 
  * @param opt.path URL suffix also used as method name in GCP. (optional)
  *                 If you do not enter the path, the method name will be used. (Recommended)
  * @example
- * import { Response } from 'firebase-functions';
+ * import { Request } from 'firebase-functions/v2/https';
+ * import { Response } from 'express';
  * import { onRequest } from 'firebase-triggers';
- * import { Request } from 'firebase-functions/lib/common/providers/https';
  * 
  * class UserCtrl {
  *     \@onRequest()
@@ -101,8 +101,8 @@ export function onRequest(opt: string | RequestOptions & HttpsOptions = {}) {
  *             If you do not enter the path, the method name will be used. (Recommended)
  * 
  * @example
- * import { Request } from 'firebase-functions/lib/common/providers/https';
- * import { Response } from 'firebase-functions';
+ * import { Request } from 'firebase-functions/v2/https';
+ * import { Response } from 'express';
  * import { GET } from 'firebase-triggers';
  * 
  * class UserCtrl {
@@ -128,8 +128,8 @@ export function GET(path: string | HttpsOptions & { path?: string } = {}) {
  *             If you do not enter the path, the method name will be used. (Recommended)
  * 
  * @example
- * import { Request } from 'firebase-functions/lib/common/providers/https';
- * import { Response } from 'firebase-functions';
+ * import { Request } from 'firebase-functions/v2/https';
+ * import { Response } from 'express';
  * import { POST } from 'firebase-triggers';
  * 
  * class UserCtrl {
@@ -155,8 +155,8 @@ export function POST(path: string | HttpsOptions & { path?: string } = {}) {
  *             If you do not enter the path, the method name will be used. (Recommended)
  * 
  * @example
- * import { Request } from 'firebase-functions/lib/common/providers/https';
- * import { Response } from 'firebase-functions';
+ * import { Request } from 'firebase-functions/v2/https';
+ * import { Response } from 'express';
  * import { PUT } from 'firebase-triggers';
  * 
  * class UserCtrl {
@@ -180,8 +180,8 @@ export function PUT(path: string | HttpsOptions & { path?: string } = {}) {
  *             If you do not enter the path, the method name will be used. (Recommended)
  * 
  * @example
- * import { Request } from 'firebase-functions/lib/common/providers/https';
- * import { Response } from 'firebase-functions';
+ * import { Request } from 'firebase-functions/v2/https';
+ * import { Response } from 'express';
  * import { PATCH } from 'firebase-triggers';
  * 
  * class UserCtrl {
@@ -205,8 +205,8 @@ export function PATCH(path: string | HttpsOptions & { path?: string } = {}) {
  *             If you do not enter the path, the method name will be used. (Recommended)
  * 
  * @example
- * import { Request } from 'firebase-functions/lib/common/providers/https';
- * import { Response } from 'firebase-functions';
+ * import { Request } from 'firebase-functions/v2/https';
+ * import { Response } from 'express';
  * import { DELETE } from 'firebase-triggers';
  * 
  * class UserCtrl {

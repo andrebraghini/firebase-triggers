@@ -4,6 +4,9 @@ import { container } from 'tsyringe';
 /** List of Cloud Functions found at startup */
 const firebaseFunctionList: FirebaseFunction[] = [];
 
+/** Fallback instances when DI container does not resolve the class */
+const fallbackInstances = new WeakMap<Function, object>();
+
 /**
  * Returns the list of Cloud Functions found at startup or added later
  */
@@ -43,23 +46,37 @@ export function getGroupName(func: FirebaseFunction): string | undefined {
  */
 function getSliceEnd(className: string): number {
   const suffixToRemove = ['ctrl', 'controller'];
-  
+
   for (const suffix of suffixToRemove) {
-    if (className.toLowerCase().endsWith(suffix))
-      return -suffix.length;
+    if (className.toLowerCase().endsWith(suffix)) return -suffix.length;
   }
 
   return className.length;
 }
 
+function resolveInstance(Constructor: Function): any {
+  try {
+    return container.resolve(Constructor as any);
+  } catch {
+    const existing = fallbackInstances.get(Constructor);
+    if (existing) {
+      return existing;
+    }
+    const instance = new (Constructor as any)();
+    fallbackInstances.set(Constructor, instance);
+    return instance;
+  }
+}
+
 /**
  * Returns the class method instantiated by the resolver to do the dependency injection.
+ * Falls back to a library-managed instance when the class is not registered in tsyringe.
  * @param target Control class
  * @param methodName Method name
  */
 export function getClassMethod(target: any, methodName: string) {
   return (...args: any) => {
-    const instance: any = container.resolve(target.constructor);
+    const instance: any = resolveInstance(target.constructor);
     return instance[methodName](...args);
   };
 }

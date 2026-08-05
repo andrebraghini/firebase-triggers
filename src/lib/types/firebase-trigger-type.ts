@@ -5,6 +5,9 @@ export enum FirebaseTriggerType {
   /** Triggered as a callable function */
   CALLABLE = 'CALLABLE',
 
+  /** Blocking trigger before a new user is created on Firebase Authentication */
+  BEFORE_USER_CREATE = 'BEFORE_USER_CREATE',
+
   /** Triggered when a new user is created on Firebase Authentication */
   USER_CREATE = 'USER_CREATE',
 
@@ -22,6 +25,18 @@ export enum FirebaseTriggerType {
 
   /** Triggered when a document is created, updated or removed from Firestore */
   FIRESTORE_WRITE = 'FIRESTORE_WRITE',
+
+  /** Triggered when a document is created on Firestore (with auth context) */
+  FIRESTORE_CREATE_WITH_AUTH_CONTEXT = 'FIRESTORE_CREATE_WITH_AUTH_CONTEXT',
+
+  /** Triggered when a document is updated on Firestore (with auth context) */
+  FIRESTORE_UPDATE_WITH_AUTH_CONTEXT = 'FIRESTORE_UPDATE_WITH_AUTH_CONTEXT',
+
+  /** Triggered when a document is removed from Firestore (with auth context) */
+  FIRESTORE_DELETE_WITH_AUTH_CONTEXT = 'FIRESTORE_DELETE_WITH_AUTH_CONTEXT',
+
+  /** Triggered when a document is written on Firestore (with auth context) */
+  FIRESTORE_WRITE_WITH_AUTH_CONTEXT = 'FIRESTORE_WRITE_WITH_AUTH_CONTEXT',
 
   /** Triggered when there is a new post on a specific topic on PubSub */
   PUBSUB_PUBLISH = 'PUBSUB_PUBLISH',
