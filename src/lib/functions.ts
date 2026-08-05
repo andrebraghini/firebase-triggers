@@ -28,13 +28,12 @@ import { multipleRequestHandler } from './handlers/multiple-request-handler';
 import { requestSchemaValidatorHandler } from './handlers/request-schema-validator-handler';
 import { getFirebaseFunctionList, getGroupName } from './internal-methods';
 
-/** Methods used to register Firebase triggers */
-const triggerMethods = {
+/** Methods used to register Firebase triggers (HTTP is handled separately) */
+const triggerMethods: Partial<Record<FirebaseTriggerType, (handler: any, options: any) => any>> = {
   CALLABLE: (handler: any, options: CallableOptions = {}) => onCall(options, handler),
   BEFORE_USER_CREATE: (handler: any, options: BlockingOptions = {}) => beforeUserCreated(options, handler),
   USER_CREATE: (handler: any, options: AuthEventOptions = {}) => onUserCreated(options, handler),
   USER_DELETE: (handler: any, options: AuthEventOptions = {}) => onUserDeleted(options, handler),
-  HTTP_REQUEST: (handler: any, options: HttpsOptions = {}) => onRequest(options, handler),
   FIRESTORE_CREATE: (handler: any, options: string | DocumentOptions<string>) =>
     onDocumentCreated(options as any, handler),
   FIRESTORE_UPDATE: (handler: any, options: string | DocumentOptions<string>) =>
@@ -126,32 +125,32 @@ export function getFirebaseFunctionListToExport(): FirebaseFunctionList {
 
   // Add methods to export, except HTTP methods
   functionList.forEach((func) => {
-    const triggerMethod = triggerMethods[func.trigger];
-    if (triggerMethod) {
-      const groupName = getGroupName(func);
-      const cloudFunctionName = getCloudFunctionName(func);
-      const fullMethodName = groupName ? `${groupName}-${cloudFunctionName}` : cloudFunctionName;
+    const groupName = getGroupName(func);
+    const cloudFunctionName = getCloudFunctionName(func);
+    const fullMethodName = groupName ? `${groupName}-${cloudFunctionName}` : cloudFunctionName;
 
-      if (func.trigger === FirebaseTriggerType.HTTP_REQUEST) {
-        const methods = !func.key
-          ? ['DEFAULT']
-          : Array.isArray(func.key.methods)
-            ? func.key.methods
-            : [func.key.methods || 'DEFAULT'];
-        if (!httpRequestFunctions[fullMethodName]) {
-          httpRequestFunctions[fullMethodName] = {};
-        }
-
-        methods.forEach((httpMethod) => {
-          httpRequestFunctions[fullMethodName][httpMethod] = {
-            handler: func.method,
-            options: func.options,
-          };
-        });
-
-        return;
+    if (func.trigger === FirebaseTriggerType.HTTP_REQUEST) {
+      const methods = !func.key
+        ? ['DEFAULT']
+        : Array.isArray(func.key.methods)
+          ? func.key.methods
+          : [func.key.methods || 'DEFAULT'];
+      if (!httpRequestFunctions[fullMethodName]) {
+        httpRequestFunctions[fullMethodName] = {};
       }
 
+      methods.forEach((httpMethod) => {
+        httpRequestFunctions[fullMethodName][httpMethod] = {
+          handler: func.method,
+          options: func.options,
+        };
+      });
+
+      return;
+    }
+
+    const triggerMethod = triggerMethods[func.trigger];
+    if (triggerMethod) {
       if (groupName) {
         if (!result[groupName]) {
           result[groupName] = {};

@@ -107,4 +107,19 @@ describe('mergeError()', () => {
       error: 'Another message',
     });
   });
+
+  it('should stringify non-request errors without a message property', () => {
+    const baseError = {
+      code: 'auth/access-denied',
+      msg: 'Access denied',
+    };
+
+    const result = mergeError(baseError, { error: { reason: 'boom' } });
+
+    expect(result).toMatchObject({
+      code: 'auth/access-denied',
+      msg: 'Access denied',
+      error: JSON.stringify({ reason: 'boom' }),
+    });
+  });
 });

@@ -28,6 +28,26 @@ class DemoCtrl {
   writeWithAuth() {
     return 'writeWithAuth';
   }
+
+  @onFirestoreCreateWithAuthContext({ document: 'demo/{id}', memory: '256MiB' })
+  createWithAuthOptions() {
+    return 'createWithAuthOptions';
+  }
+
+  @onFirestoreUpdateWithAuthContext({ document: 'demo/{id}', memory: '256MiB' })
+  updateWithAuthOptions() {
+    return 'updateWithAuthOptions';
+  }
+
+  @onFirestoreDeleteWithAuthContext({ document: 'demo/{id}', memory: '256MiB' })
+  deleteWithAuthOptions() {
+    return 'deleteWithAuthOptions';
+  }
+
+  @onFirestoreWriteWithAuthContext({ document: 'demo/{id}', memory: '256MiB' })
+  writeWithAuthOptions() {
+    return 'writeWithAuthOptions';
+  }
 }
 
 const cases = [
@@ -66,6 +86,47 @@ describe('Firestore WithAuthContext decorators', () => {
       expect(func.key).toBe('demo/{id}');
       expect(Reflect.getMetadata(item.meta, DemoCtrl.prototype, item.methodName)).toMatchObject({
         document: 'demo/{id}',
+      });
+    });
+  }
+
+  const optionCases = [
+    {
+      methodName: 'createWithAuthOptions',
+      trigger: FirebaseTriggerType.FIRESTORE_CREATE_WITH_AUTH_CONTEXT,
+      meta: 'onFirestoreCreateWithAuthContext',
+    },
+    {
+      methodName: 'updateWithAuthOptions',
+      trigger: FirebaseTriggerType.FIRESTORE_UPDATE_WITH_AUTH_CONTEXT,
+      meta: 'onFirestoreUpdateWithAuthContext',
+    },
+    {
+      methodName: 'deleteWithAuthOptions',
+      trigger: FirebaseTriggerType.FIRESTORE_DELETE_WITH_AUTH_CONTEXT,
+      meta: 'onFirestoreDeleteWithAuthContext',
+    },
+    {
+      methodName: 'writeWithAuthOptions',
+      trigger: FirebaseTriggerType.FIRESTORE_WRITE_WITH_AUTH_CONTEXT,
+      meta: 'onFirestoreWriteWithAuthContext',
+    },
+  ];
+
+  for (const item of optionCases) {
+    it(`should register ${item.methodName}() with DocumentOptions`, () => {
+      const func = getFirebaseFunctionList().find((entry) => entry.methodName === item.methodName);
+      if (!func) {
+        fail(`Method ${item.methodName}() not found`);
+        return;
+      }
+      expect(func.method()).toBe(item.methodName);
+      expect(func.trigger).toBe(item.trigger);
+      expect(func.key).toBe('demo/{id}');
+      expect(func.options).toMatchObject({ document: 'demo/{id}', memory: '256MiB' });
+      expect(Reflect.getMetadata(item.meta, DemoCtrl.prototype, item.methodName)).toMatchObject({
+        document: 'demo/{id}',
+        memory: '256MiB',
       });
     });
   }
